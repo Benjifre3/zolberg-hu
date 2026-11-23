@@ -9,3 +9,4 @@ pnpm-lock.yaml
 docs/MASTER_PROMPT.md
 tests/visual/__screenshots__/
 .wrangler/
+.lighthouseci-preview/

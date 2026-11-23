@@ -16,6 +16,7 @@ export default defineConfig(
       'playwright-report/',
       '.lighthouseci/',
       '.wrangler/',
+      '.lighthouseci-preview/',
     ],
   },
   js.configs.recommended,

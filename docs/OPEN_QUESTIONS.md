@@ -60,7 +60,7 @@ A repó most helyi azonosítóval commitol (D-016). Push előtt:
 
 ---
 
-### Q8 · Hogyan mérjük a mobil LCP-határt (1,8 s)? · blokkolja: a CI zöld állapotát
+### Q8 · Hogyan mérjük a mobil LCP-határt (1,8 s)? · LEZÁRVA (2026-11-24): a Pages előnézeten (a) (D-037)
 
 A helyi Lighthouse CI (szimulált lassú 4G, HTTP/1.1-es statikus szerver, Windows) a W4 után **2010 ms**-ot mér (W3: 1785 ms), a Performance pontszám 99. Felezéses méréssel kimutattam, hogy a különbséget maga az űrlap okozza (űrlap nélkül 1785 ms, űrlap szkript nélkül 1935 ms, teljes űrlap 2010 ms); a szkriptek kiszervezése, a betű-preload elhagyása, a mono betű kiváltása és a dekódolási mód nem változtatott rajta. Az űrlap a specifikáció része, nem hagyható el.
 

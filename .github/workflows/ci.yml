@@ -84,3 +84,56 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+
+  preview-lighthouse:
+    name: Lighthouse a Pages előnézeten (LCP ≤ 1,8 s, Q8)
+    runs-on: ubuntu-latest
+    needs: quality
+    # Csak a saját repóban, ha a Cloudflare-titkok be vannak állítva (fork PR-ben nem fut).
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PAGES_PROJECT: zolberg-hu
+      PREVIEW_BRANCH: lhci-preview
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Titkok ellenőrzése
+        id: secrets
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::Nincs CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID: az előnézeti mérés kimarad."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.secrets.outputs.ok == 'true'
+        uses: actions/checkout@v7
+      - if: steps.secrets.outputs.ok == 'true'
+        uses: pnpm/action-setup@v6
+      - if: steps.secrets.outputs.ok == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - if: steps.secrets.outputs.ok == 'true'
+        run: pnpm install --frozen-lockfile
+      - name: Build (tesztadattal – a Pages előnézet automatikusan noindex)
+        if: steps.secrets.outputs.ok == 'true'
+        run: pnpm build:fixture
+      - name: Deploy az előnézeti ágra
+        if: steps.secrets.outputs.ok == 'true'
+        run: pnpm exec wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "$PREVIEW_BRANCH" --commit-dirty=true
+      - name: Playwright böngésző
+        if: steps.secrets.outputs.ok == 'true'
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Lighthouse CI az előnézeten
+        if: steps.secrets.outputs.ok == 'true'
+        run: pnpm test:lh -- --preview "https://${PREVIEW_BRANCH}.${PAGES_PROJECT}.pages.dev/"
+      - name: Riport
+        if: failure() && steps.secrets.outputs.ok == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-preview
+          path: .lighthouseci-preview/
+          if-no-files-found: ignore

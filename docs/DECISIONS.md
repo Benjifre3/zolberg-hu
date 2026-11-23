@@ -165,3 +165,7 @@ A 2. szakasz 4. pontja (nincs harmadik féltől származó script) elsőbbséget
 - A levélküldés cserélhető adapter mögött van (`src/server/mailer.ts`). Amíg a Q3 nincs eldöntve, csak a `dry-run` mód él (tesztek, fejlesztés); szolgáltató nélkül a szerver 503-at ad, és az űrlap nem jelez hamis sikert.
 - Ha nincs adatkezelési tájékoztató oldal, az űrlap `data-placeholder` jelölést kap, és az éles build tartalom-őre elbukik (adatkezelési link nélkül nem élesítünk).
 - Az e2e tesztek a Cloudflare helyi futtatókörnyezetén (`wrangler pages dev`, 8788-as port) futnak, így a függvény is tesztelt; a pnpm csak az `esbuild` és a `workerd` telepítési szkriptjét futtathatja (`pnpm-workspace.yaml` → `allowBuilds`).
+
+### D-037 · 2026-11-24 · Az LCP-határ mérése a Pages előnézeten (Q8, a felhasználó döntése)
+
+A specifikáció 1,8 s-os mobil LCP-határát a Cloudflare Pages előnézeti deployján mérjük (`lighthouserc.preview.json`, CI: „Lighthouse a Pages előnézeten”): a tesztadatos build az állandó `lhci-preview` ágra kerül (`https://lhci-preview.zolberg-hu.pages.dev/`), ott fut a Lighthouse mobil, szimulált lassú 4G-vel. A feladat csak akkor mér, ha a `CLOUDFLARE_API_TOKEN` és a `CLOUDFLARE_ACCOUNT_ID` titok be van állítva; addig jelzi, hogy kimaradt. A helyi Lighthouse CI (`lighthouserc.json`, HTTP/1.1-es statikus szerver) minden más határt változatlanul hibaként kezel, az LCP-t 2,1 s-os hibahatárral, hogy a romlást helyben is elkapja (W4-ben mérve: 2010 ms). A Pages az előnézeti deployokra automatikusan `noindex`-et küld; a tesztadatos oldal így nem kerül keresőbe.
