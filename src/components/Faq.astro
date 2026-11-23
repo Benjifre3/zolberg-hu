@@ -1,0 +1,71 @@
+---
+/** GYIK (6.8): natív <details>, JS nélkül működik; a kérdések a content/site.yaml-ból. */
+import SectionHead from './SectionHead.astro';
+import { site } from '../lib/site.ts';
+---
+
+<section id="gyik" class="faq section defer-render" aria-labelledby="gyik-cim">
+  <div class="container">
+    <SectionHead id="gyik-cim" title="Gyakori kérdések." />
+    <div class="faq__list">
+      {site.faq.map((item) => (
+        <details class="faq__item">
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .faq__list {
+    max-width: 52rem;
+    border-block-start: 1px solid var(--line);
+  }
+
+  .faq__item {
+    border-block-end: 1px solid var(--line);
+  }
+
+  .faq__item summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 44px;
+    padding-block: var(--space-3);
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 1rem + 0.6vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* „+” jel, nyitva „×” – csak transform animálódik (7.) */
+  .faq__item summary::after {
+    content: '+';
+    flex: none;
+    color: var(--accent);
+    font-family: var(--font-body);
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+
+  .faq__item[open] summary::after {
+    transform: rotate(45deg);
+  }
+
+  .faq__item p {
+    padding-block-end: var(--space-4);
+    color: var(--ink-2);
+  }
+</style>

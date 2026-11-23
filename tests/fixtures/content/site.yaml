@@ -39,3 +39,57 @@ proof:
 
 contact:
   response_days: 3
+
+# Szolgáltatás (6.5) – a szövegek jóváhagyásra várnak (OPEN_QUESTIONS B)
+services:
+  intro: Négy lépés, és mindegyiknek kézzelfogható eredménye van, amelyet az átadás előtt látni fog.
+  items:
+    - icon: measure
+      title: Mérés és felmérés
+      text: Megmérem a jelenlegi oldal sebességét, mobilos használhatóságát és keresőbeli alapjait.
+    - icon: design
+      title: Egyedi terv
+      text: A cég kínálatára és az ajánlatkérés útjára szabott terv, sablon nélkül.
+    - icon: build
+      title: Gyors, mobilbarát építés
+      text: Könnyű, gyorsan betöltő oldal, amely telefonon is ugyanolyan jól használható.
+    - icon: handover
+      title: Átadás és karbantartás
+      text: Az átadáskor újramérek, és az eredményt a kiinduló méréssel együtt adom át.
+
+# Folyamat (6.6) – az időkeret ([X] nap/hét) csak akkor jelenik meg, ha kitöltöd
+process:
+  steps:
+    - title: Mérés
+      text: Lemérem a jelenlegi oldalt, és rövid, forrással ellátott összefoglalót küldök róla.
+      duration: 2–3 munkanap
+    - title: Terv
+      text: Megmutatom, hogyan épül fel az új oldal, és mi változik az ajánlatkérés útján.
+      duration: 1 hét
+    - title: Építés
+      text: Elkészítem az oldalt, és a megbeszélt időpontokban megmutatom, hol tart.
+      duration: 2–4 hét
+    - title: Átadás
+      text: Újramérek, összevetem az eredményt a kiinduló állapottal, és átadom az oldalt.
+      duration: 1 munkanap
+
+# Rólam (6.7) – név a company.owner_name-ből; portré: content/about/<fájl> (4:5)
+about:
+  portrait: teszt-portre.png
+  portrait_alt: Tesztportré – szürke sziluett, TESZTADAT felirattal.
+  bio:
+    - Teszt bemutatkozás első mondata a fixture-tartalomhoz.
+    - Második mondat, hogy a sorhossz és a tördelés is ellenőrizhető legyen.
+
+# GYIK (6.8) – az ár-kérdés csak a pricing-döntés után kerül be
+faq:
+  - q: Mennyi idő alatt készül el az oldal?
+    a: Az időkeretet a mérés és a terv után írásban rögzítem. Addig nem ígérek dátumot, mert az a meglévő tartalomtól és a döntések ütemétől függ.
+  - q: Ki adja a szövegeket és a képeket?
+    a: A meglévő szövegekből és képekből indulok ki. Ahol valami hiányzik vagy elavult, jelzem, és megbeszéljük, ki készíti el.
+  - q: Mi lesz a keresőbeli helyezéssel és a régi linkekkel?
+    a: A régi címek 301-es átirányítással az új oldalakra visznek, így a meglévő találatok és hivatkozások nem vesznek el. Helyezést nem ígérek, mert azt nem én döntöm el.
+  - q: Kié lesz az elkészült oldal?
+    a: Az oldal és a forráskódja a cégé. A domain és a tárhely az Ön nevén van, vagy oda kerül.
+  - q: Ki tartja karban az oldalt az átadás után?
+    a: Az oldal karbantartás nélkül is működik. Ha szeretné, a frissítésekről és a mérések megismétléséről külön állapodunk meg.

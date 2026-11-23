@@ -72,6 +72,42 @@ export const SiteSchema = z.object({
     /** „[X] munkanapon belül” (6.9) */
     response_days: z.number().int().min(1).max(30).nullable().default(null),
   }),
+  /** Szolgáltatás (6.5): bevezető + pontosan 4 kártya; ár csak a pricing-döntés után. */
+  services: z.object({
+    intro: z.string().min(20),
+    items: z
+      .array(
+        z.object({
+          icon: z.enum(['measure', 'design', 'build', 'handover']),
+          title: z.string().min(3),
+          text: z.string().min(20).max(200),
+        }),
+      )
+      .length(4),
+  }),
+  /** Folyamat (6.6): 4 lépés; az időkeret csak akkor jelenik meg, ha meg van adva. */
+  process: z.object({
+    steps: z
+      .array(
+        z.object({
+          title: z.string().min(3),
+          text: z.string().min(20).max(200),
+          duration: nullableText.default(null),
+        }),
+      )
+      .length(4),
+  }),
+  /** Rólam (6.7): csak névvel és bemutatkozással jelenik meg; a portré a content/about/ mappában. */
+  about: z.object({
+    portrait: nullableText.default(null),
+    portrait_alt: nullableText.default(null),
+    bio: z.array(z.string().min(20)).max(3).nullable().default(null),
+  }),
+  /** GYIK (6.8): 5–6 kérdés, natív <details>. */
+  faq: z
+    .array(z.object({ q: z.string().min(8), a: z.string().min(20).max(400) }))
+    .min(5)
+    .max(6),
 });
 
 export type Site = z.infer<typeof SiteSchema>;

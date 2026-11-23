@@ -24,7 +24,7 @@ const { domain, class: className } = Astro.props;
   </div>
 </div>
 
-<style>
+<style is:global>
   .browser {
     overflow: hidden;
     border: 1px solid rgb(20 19 15 / 0.1);
@@ -76,7 +76,7 @@ const { domain, class: className } = Astro.props;
     white-space: nowrap;
   }
 
-  .browser__screen :global(img) {
+  .browser__screen img {
     display: block;
     width: 100%;
     height: auto;

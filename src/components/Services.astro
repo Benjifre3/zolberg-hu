@@ -1,0 +1,89 @@
+---
+/**
+ * Szolgáltatás (6.5): H2 „Mit kap a cége.” + 4 kártya saját vonalikonnal (egy vonalvastagság).
+ * Ár vagy csomagnév csak a pricing-döntés után (most nincs). Szöveg: content/site.yaml.
+ */
+import SectionHead from './SectionHead.astro';
+import { site } from '../lib/site.ts';
+
+const ICONS: Record<string, string[]> = {
+  measure: ['M4 16a8 8 0 1 1 16 0', 'M12 16l4.5-5', 'M4 20h16'],
+  design: ['M4 4h16v16H4z', 'M4 9h16', 'M10 9v11'],
+  build: ['M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z', 'M11 18h2'],
+  handover: ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z', 'M8 12.5l2.5 2.5L16 9.5'],
+};
+---
+
+<section id="szolgaltatas" class="services section defer-render" aria-labelledby="szolg-cim">
+  <div class="container">
+    <SectionHead id="szolg-cim" title="Mit kap a cége.">
+      <p>{site.services.intro}</p>
+    </SectionHead>
+    <ul class="services__grid" role="list">
+      {site.services.items.map((s) => (
+        <li class="services__card">
+          <svg class="services__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            {(ICONS[s.icon] ?? []).map((d) => (
+              <path d={d} />
+            ))}
+          </svg>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style is:global>
+  .services__grid {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .services__card {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+  }
+
+  .services__icon {
+    width: 36px;
+    height: 36px;
+    margin-block-end: var(--space-2);
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .services__card h3 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .services__card p {
+    color: var(--ink-2);
+    font-size: 1.0625rem;
+  }
+
+  @media (min-width: 834px) {
+    .services__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .services__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

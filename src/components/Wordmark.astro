@@ -10,7 +10,7 @@ const { class: className } = Astro.props;
   zolberg<span class="wordmark__dot">.</span>
 </span>
 
-<style>
+<style is:global>
   .wordmark {
     font-family: var(--font-display);
     font-weight: 700;
@@ -23,8 +23,8 @@ const { class: className } = Astro.props;
     color: var(--accent);
   }
 
-  :global(.on-ink) .wordmark__dot,
-  :global(.on-forest) .wordmark__dot {
+  .on-ink .wordmark__dot,
+  .on-forest .wordmark__dot {
     color: var(--accent-on-dark);
   }
 </style>

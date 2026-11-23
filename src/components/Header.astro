@@ -74,7 +74,7 @@ const { onHome } = Astro.props;
   }
 </script>
 
-<style>
+<style is:global>
   .site-header {
     position: sticky;
     inset-block-start: 0;
@@ -140,7 +140,7 @@ const { onHome } = Astro.props;
     text-underline-offset: 0.45em;
   }
 
-  .site-header :global(.site-header__cta) {
+  .site-header .site-header__cta {
     margin-inline-start: auto;
   }
 
@@ -149,7 +149,7 @@ const { onHome } = Astro.props;
       display: block;
     }
 
-    .site-header__nav + :global(.site-header__cta) {
+    .site-header__nav + .site-header__cta {
       margin-inline-start: var(--space-2);
     }
   }

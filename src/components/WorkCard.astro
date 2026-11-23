@@ -64,19 +64,19 @@ const { work } = Astro.props;
   </article>
 </li>
 
-<style>
+<style is:global>
   .work-card article {
     display: grid;
     gap: var(--space-3);
   }
 
-  .work-card :global(.work-card__media) {
+  .work-card .work-card__media {
     transition:
       transform 320ms var(--ease-out),
       box-shadow 320ms var(--ease-out);
   }
 
-  .work-card :global(.work-card__media img) {
+  .work-card .work-card__media img {
     transition: transform 700ms var(--ease-out);
   }
 
@@ -123,12 +123,12 @@ const { work } = Astro.props;
   }
 
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .work-card:hover :global(.work-card__media) {
+    .work-card:hover .work-card__media {
       transform: translateY(-4px);
       box-shadow: var(--shadow-card-hover);
     }
 
-    .work-card:hover :global(.work-card__media img) {
+    .work-card:hover .work-card__media img {
       transform: scale(1.035);
     }
   }

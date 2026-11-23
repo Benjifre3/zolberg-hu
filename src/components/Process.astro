@@ -1,0 +1,88 @@
+---
+/**
+ * Folyamat (6.6, D-007): erdőzöld sáv, 4 lépés óriás sorszámmal (01–04), címmel, egy
+ * mondattal és időkerettel. Kártyák helyett 1 px-es vonalakkal osztott cellák (Framer-elv).
+ * Az időkeret csak akkor jelenik meg, ha a site.yaml-ban meg van adva (2.1).
+ */
+import { site } from '../lib/site.ts';
+---
+
+<section
+  id="folyamat"
+  class="process on-forest section defer-render"
+  aria-labelledby="folyamat-cim"
+>
+  <div class="container">
+    <h2 id="folyamat-cim">Így dolgozom.</h2>
+    <ol class="process__steps" role="list">
+      {site.process.steps.map((step, i) => (
+        <li class="process__step">
+          <span class="process__num" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <h3>
+            <span class="visually-hidden">{i + 1}. lépés: </span>
+            {step.title}
+          </h3>
+          <p>{step.text}</p>
+          {step.duration && <p class="process__time mono">Időkeret: {step.duration}</p>}
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style is:global>
+  .process h2 {
+    margin-block-end: var(--space-6);
+  }
+
+  .process__steps {
+    display: grid;
+    padding: 0;
+    list-style: none;
+  }
+
+  .process__step {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding-block: var(--space-4);
+    border-block-start: 1px solid var(--rule);
+  }
+
+  .process__num {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--accent-on-dark);
+  }
+
+  .process__step h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .process__time {
+    color: var(--fg-muted);
+  }
+
+  @media (min-width: 1100px) {
+    .process__steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .process__step {
+      padding: 0 var(--space-4);
+      border-block-start: 0;
+      border-inline-start: 1px solid var(--rule);
+    }
+
+    .process__step:first-child {
+      padding-inline-start: 0;
+      border-inline-start: 0;
+    }
+  }
+</style>

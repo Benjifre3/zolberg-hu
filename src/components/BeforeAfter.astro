@@ -101,7 +101,7 @@ const label = `Előtte–utána összehasonlítás: ${work.name}`;
   }
 </script>
 
-<style>
+<style is:global>
   .ba {
     --pos: 50%;
 
@@ -118,7 +118,7 @@ const label = `Előtte–utána összehasonlítás: ${work.name}`;
     user-select: none;
   }
 
-  .ba__stage :global(.ba__img) {
+  .ba__stage .ba__img {
     display: block;
     width: 100%;
     height: auto;

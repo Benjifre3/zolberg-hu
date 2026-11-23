@@ -6,8 +6,8 @@ import { approvedWorks } from './portfolio.ts';
 
 export const SECTIONS = {
   works: true, // W2
-  services: false, // W3
-  process: false, // W3
+  services: true, // W3
+  process: true, // W3
 } as const;
 
 export interface Anchor {

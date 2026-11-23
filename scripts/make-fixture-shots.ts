@@ -107,4 +107,18 @@ const page = await browser.newPage({
 await page.setContent(before);
 await page.screenshot({ path: `${OUT}teszt-gepgyar-elotte.png` });
 console.log('teszt-gepgyar-elotte.png');
+
+// Tesztportré (4:5): szürke sziluett, nem valódi személy.
+const portrait = await browser.newPage({
+  viewport: { width: 800, height: 1000 },
+  deviceScaleFactor: 1,
+});
+await portrait.setContent(`<body style="margin:0;background:linear-gradient(#d9d6cf,#c4c0b6)">
+<span style="position:fixed;top:16px;right:16px;background:#000;color:#fff;font:700 18px Arial;padding:6px 10px;border-radius:4px">TESZTADAT</span>
+<svg viewBox="0 0 800 1000" width="800" height="1000"><circle cx="400" cy="380" r="150" fill="#8f8a80"/>
+<path d="M130 1000c20-230 140-360 270-360s250 130 270 360z" fill="#8f8a80"/></svg></body>`);
+await portrait.screenshot({
+  path: fileURLToPath(new URL('../tests/fixtures/content/about/teszt-portre.png', import.meta.url)),
+});
+console.log('about/teszt-portre.png');
 await browser.close();

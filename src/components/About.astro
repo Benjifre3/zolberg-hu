@@ -1,0 +1,79 @@
+---
+/**
+ * Rólam (6.7, 4. aláíró elem 4.: valódi név, arc és cégadat). Csak akkor jelenik meg, ha a név
+ * és a bemutatkozás megvan; a portré (4:5) opcionális, amíg nincs valódi fotó (5.: stock nincs).
+ */
+import { Picture } from 'astro:assets';
+import { site } from '../lib/site.ts';
+import { aboutImage } from '../lib/images.ts';
+
+const { owner_name: name, legal_name, tax_id, address } = site.company;
+const { bio, portrait, portrait_alt } = site.about;
+const facts = [legal_name, tax_id && `Adószám: ${tax_id}`, address].filter(Boolean);
+---
+
+{name && bio && (
+  <section id="rolam" class="about section defer-render" aria-labelledby="rolam-cim">
+    <div class="container about__inner">
+      {portrait && portrait_alt && (
+        <Picture
+          src={aboutImage(portrait)}
+          formats={['avif', 'webp']}
+          widths={[320, 480, 640]}
+          sizes="(min-width: 834px) 34vw, calc(100vw - 40px)"
+          quality={70}
+          alt={portrait_alt}
+          loading="lazy"
+          decoding="async"
+          class="about__portrait"
+        />
+      )}
+      <div class="about__text">
+        <h2 id="rolam-cim">{name}, a Zolberg alapítója.</h2>
+        {bio.map((p) => (
+          <p>{p}</p>
+        ))}
+        {facts.length > 0 && <p class="about__facts mono">{facts.join(' · ')}</p>}
+      </div>
+    </div>
+  </section>
+)}
+
+<style is:global>
+  .about__inner {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .about .about__portrait {
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .about__text {
+    display: grid;
+    align-content: center;
+    gap: var(--space-3);
+  }
+
+  .about__text h2 {
+    max-width: 14ch;
+  }
+
+  .about__facts {
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 834px) {
+    .about__inner {
+      grid-template-columns: 5fr 7fr;
+      align-items: center;
+      gap: var(--space-6);
+    }
+  }
+</style>

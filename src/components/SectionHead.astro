@@ -28,7 +28,7 @@ const hasIntro = Astro.slots.has('default');
   )}
 </div>
 
-<style>
+<style is:global>
   .section-head {
     display: grid;
     gap: var(--space-3);
@@ -54,7 +54,7 @@ const hasIntro = Astro.slots.has('default');
       grid-column: 1 / span 8;
     }
 
-    .section-head :global(.section-head__link) {
+    .section-head .section-head__link {
       grid-column: 9 / -1;
       justify-self: end;
     }

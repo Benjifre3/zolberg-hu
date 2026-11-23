@@ -56,7 +56,7 @@ const work = featuredWork?.images ? featuredWork : null;
   </figure>
 )}
 
-<style>
+<style is:global>
   .hero-visual {
     margin: 0;
   }
@@ -66,11 +66,11 @@ const work = featuredWork?.images ? featuredWork : null;
     padding-block-end: 12%; /* hely a lelógó telefonnak */
   }
 
-  :global(.hero-visual__desktop) {
+  .hero-visual__desktop {
     width: 100%;
   }
 
-  :global(.hero-visual__phone) {
+  .hero-visual__phone {
     position: absolute;
     inset-inline-end: 0;
     inset-block-end: 0;
@@ -94,11 +94,11 @@ const work = featuredWork?.images ? featuredWork : null;
       padding-block-end: 6%;
     }
 
-    :global(.hero-visual__desktop) {
+    .hero-visual__desktop {
       width: 88%;
     }
 
-    :global(.hero-visual__phone) {
+    .hero-visual__phone {
       width: 23%;
     }
   }

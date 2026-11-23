@@ -143,3 +143,13 @@ A referenciák egyetlen forrása a weboldal repójának `content/portfolio.yaml`
 - A kártyán két link van: „Esettanulmányt kérek” (→ `#kapcsolat`, esettanulmány-oldal még nincs) és „Élő oldal” (a `live_url`).
 - A kiemelt munka és a hero ugyanazt a munkát mutatja (a specifikáció mindkettőt a legerősebb munkára írja).
 - Az előtte/utána csúszka natív `input[type=range]`, amely átlátszóan lefedi a képpárt; a látható fogantyú mutatja a fókuszt. A képpárnak azonos méretűnek és kivágásúnak kell lennie (`pnpm shots -- --only <id> --url <régi URL> --suffix elotte`).
+
+### D-033 · 2026-11-24 · Komponens-CSS hash nélkül (`is:global`), BEM-előtaggal
+
+A W3 négy szekciójával a CSS 26,0 KB lett (keret: 25 KB, tömörítetlenül). A scoped jelölés (`.astro-xxxx`) 231 helyen ~3,4 KB-ot adott. Mivel minden komponens egyedi BEM-előtagot használ (`hero__`, `services__` …), a stílusok továbbra is a komponensfájlban vannak, de `<style is:global>`-ként, hash nélkül. Eredmény: 22,6 KB. Új komponensnél az osztálynév kötelezően a komponens nevével kezdődik. A vizuális regressziós teszt a `content-visibility: auto`-t kikapcsolja, különben a teljes oldalas képen a viewporton kívüli blokkok üresek maradnának.
+
+### D-034 · 2026-11-24 · W3 szövegek és megjelenési szabályok
+
+- A szolgáltatás-, folyamat- és GYIK-szövegeket én írtam (magázás, egyes szám első személy, ígéret és szuperlatívusz nélkül); **jóváhagyásra várnak** (OPEN_QUESTIONS B). Kód nélkül a `content/site.yaml`-ban írhatók át.
+- A 40–60 szavas szabályt a törzsszövegre alkalmazzuk (címek nélkül); a GYIK kérdés–válasz formátuma kivétel. A `tests/unit/copy.test.ts` ellenőrzi, és tiltja a felkiáltójelet, az emojit, a „csapatunk”-féle többes számot és a szuperlatívuszokat.
+- A folyamat időkerete csak kitöltve jelenik meg; a „Rólam” szekció csak névvel és bemutatkozással (a portré opcionális, amíg nincs valódi fotó). Az ár-kérdés a pricing-döntés után kerül a GYIK-be.

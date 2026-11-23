@@ -12,6 +12,8 @@ for (const { path, name } of PAGES) {
       await page.setViewportSize(viewport);
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto(path);
+      // A content-visibility: auto blokkok teljes oldalas képen üresek maradnának (D-033).
+      await page.addStyleTag({ content: '.defer-render{content-visibility:visible!important}' });
       await page.evaluate(() => document.fonts.ready);
       await expect(page).toHaveScreenshot(`${name}-${vpName}.png`, { fullPage: true });
     });

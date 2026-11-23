@@ -87,7 +87,7 @@ const hasConcept = approvedWorks.some((w) => w.type === 'concept_demo');
   }
 </script>
 
-<style>
+<style is:global>
   .works__more {
     margin-block-start: var(--space-7);
   }
@@ -141,7 +141,7 @@ const hasConcept = approvedWorks.some((w) => w.type === 'concept_demo');
     list-style: none;
   }
 
-  .works__grid :global([hidden]) {
+  .works__grid [hidden] {
     display: none;
   }
 
