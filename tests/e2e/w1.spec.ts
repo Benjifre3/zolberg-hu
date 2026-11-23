@@ -90,9 +90,7 @@ test.describe('bizonyíték-sáv', () => {
 });
 
 test.describe('lábléc és tartalmi szabályok', () => {
-  test('a cégadatok a site.yaml-ból jönnek, a jogi oszlop nem létező oldalra nem mutat', async ({
-    page,
-  }) => {
+  test('a cégadatok a site.yaml-ból jönnek', async ({ page }) => {
     await page.goto('/');
     const footer = page.locator('footer');
     await expect(footer).toContainText('Adószám: 12345678-1-12');
@@ -100,7 +98,6 @@ test.describe('lábléc és tartalmi szabályok', () => {
       'href',
       'mailto:teszt@example.com',
     );
-    await expect(footer.getByRole('link', { name: 'Impresszum' })).toHaveCount(0);
   });
 
   test('nem jóváhagyott munka sehol nem jelenik meg', async ({ page }) => {

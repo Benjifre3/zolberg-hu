@@ -3,4 +3,6 @@ export const PAGES = [
   { path: '/', name: 'fooldal' },
   { path: '/404', name: '404' },
   { path: '/koszonjuk', name: 'koszonjuk' },
+  { path: '/adatkezeles', name: 'adatkezeles' },
+  { path: '/impresszum', name: 'impresszum' },
 ] as const;

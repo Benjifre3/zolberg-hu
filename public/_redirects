@@ -1,0 +1,4 @@
+# Átirányítások a zolberg.hu-n (Cloudflare Pages). A www → apex és a zolbergstudio.com →
+# https://zolberg.hu/#munkak átirányítás domain-szintű: Cloudflare Redirect Rules (LAUNCH_CHECKLIST).
+/munkak       /#munkak       301
+/kapcsolat    /#kapcsolat    301

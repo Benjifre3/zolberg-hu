@@ -10,6 +10,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, extname } from 'node:path';
 import { checkHtml } from './lib/guard.ts';
 import { loadSite, LAUNCH_REQUIRED } from '../src/lib/site.ts';
+import { LEGAL_PAGES, hasLegal } from '../src/lib/legal.ts';
 
 const DIST = 'dist';
 const release = process.argv.includes('--release');
@@ -37,6 +38,10 @@ if (release) {
     if (value === null || value === undefined) {
       problems.push(`content/site.yaml: élesítéshez kötelező adat hiányzik: ${key}`);
     }
+  }
+  // Jogi szövegek (10.): a jogi konzultáción véglegesített adatkezelési tájékoztató és impresszum.
+  for (const p of LEGAL_PAGES) {
+    if (!hasLegal(p.slug)) problems.push(`content/legal/${p.slug}.md hiányzik (${p.label})`);
   }
 }
 

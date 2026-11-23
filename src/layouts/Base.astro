@@ -8,6 +8,7 @@ import '../styles/global.css';
 import { site } from '../lib/site.ts';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { professionalService, jsonLdText } from '../lib/jsonld.ts';
 
 interface Props {
   title?: string;
@@ -25,6 +26,9 @@ const {
 } = Astro.props;
 
 const canonical = new URL(path === '/index' ? '/' : path, Astro.site).href;
+const siteUrl = new URL('/', Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
+const isHome = path === '/';
 ---
 
 <!doctype html>
@@ -39,6 +43,23 @@ const canonical = new URL(path === '/index' ? '/' : path, Astro.site).href;
     <meta name="theme-color" content="#F4F1EA" />
     <meta name="color-scheme" content="light" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="hu_HU" />
+    <meta property="og:site_name" content="Zolberg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="zolberg. – Céges weboldal, amit a mérés igazol." />
+    <meta name="twitter:card" content="summary_large_image" />
+    {isHome && (
+      <script
+        type="application/ld+json"
+        set:html={jsonLdText(professionalService(site, siteUrl))}
+      />
+    )}
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-body" />
     <Font cssVariable="--font-mono" />
@@ -48,10 +69,10 @@ const canonical = new URL(path === '/index' ? '/' : path, Astro.site).href;
     <a class="skip-link" href="#tartalom">
       Ugrás a tartalomra
     </a>
-    <Header onHome={path === '/'} />
+    <Header onHome={isHome} />
     <main id="tartalom" tabindex="-1">
       <slot />
     </main>
-    <Footer onHome={path === '/'} />
+    <Footer onHome={isHome} />
   </body>
 </html>

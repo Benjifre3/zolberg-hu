@@ -1,0 +1,114 @@
+---
+/**
+ * /adatkezeles és /impresszum (6., 10.) a content/legal/*.md-ből. Csak a meglévő fájlokból
+ * készül oldal (getStaticPaths), így nincs helyőrzős jogi oldal.
+ */
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { formatDate } from '../lib/format.ts';
+import { site, telHref } from '../lib/site.ts';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('legal');
+  return entries.map((entry) => ({ params: { legal: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'legal'>;
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const c = site.company;
+/** Az impresszum cégadatai ugyanonnan jönnek, mint a lábléc és a JSON-LD (10., NAP). */
+const nap =
+  entry.id === 'impresszum'
+    ? (
+        [
+          ['Név', c.legal_name],
+          ['Képviselő', c.owner_name],
+          ['Székhely', c.address],
+          ['Adószám', c.tax_id],
+          ['E-mail', c.email],
+          ['Telefon', c.phone],
+        ] as const
+      ).filter(([, v]) => v)
+    : [];
+---
+
+<Base
+  title={`${entry.data.title} – Zolberg`}
+  description={entry.data.description}
+  path={`/${entry.id}`}
+>
+  <article class="section legal" aria-labelledby="jogi-cim">
+    <div class="container legal__inner">
+      <p class="mono muted">
+        Hatályos: {formatDate(entry.data.updated.toISOString().slice(0, 10))}
+      </p>
+      <h1 id="jogi-cim">{entry.data.title}</h1>
+      {nap.length > 0 && (
+        <dl class="legal__nap" data-nap>
+          {nap.map(([k, v]) => (
+            <div>
+              <dt class="mono muted">{k}</dt>
+              <dd>
+                {k === 'E-mail' ? (
+                  <a href={`mailto:${v}`}>{v}</a>
+                ) : k === 'Telefon' && v ? (
+                  <a href={telHref(v)}>{v}</a>
+                ) : (
+                  v
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <div class="legal__body">
+        <Content />
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style is:global>
+  .legal__inner {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 48rem;
+  }
+
+  .legal h1 {
+    font-size: clamp(2.25rem, 1.6rem + 3vw, 4rem);
+  }
+
+  .legal__body {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .legal__body h2 {
+    margin-block-start: var(--space-4);
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .legal__nap {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+  }
+
+  .legal__nap dd {
+    margin: 0;
+  }
+
+  .legal__body ul {
+    display: grid;
+    gap: var(--space-1);
+    padding-inline-start: 1.2em;
+  }
+</style>

@@ -22,7 +22,8 @@
     "test:lh": "node scripts/lhci.ts",
     "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e",
     "shots:fixture": "node scripts/make-fixture-shots.ts",
-    "shots": "node scripts/screenshot-works.ts"
+    "shots": "node scripts/screenshot-works.ts",
+    "og": "node scripts/make-og.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",

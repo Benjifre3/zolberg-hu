@@ -169,3 +169,13 @@ A 2. szakasz 4. pontja (nincs harmadik féltől származó script) elsőbbséget
 ### D-037 · 2026-11-24 · Az LCP-határ mérése a Pages előnézeten (Q8, a felhasználó döntése)
 
 A specifikáció 1,8 s-os mobil LCP-határát a Cloudflare Pages előnézeti deployján mérjük (`lighthouserc.preview.json`, CI: „Lighthouse a Pages előnézeten”): a tesztadatos build az állandó `lhci-preview` ágra kerül (`https://lhci-preview.zolberg-hu.pages.dev/`), ott fut a Lighthouse mobil, szimulált lassú 4G-vel. A feladat csak akkor mér, ha a `CLOUDFLARE_API_TOKEN` és a `CLOUDFLARE_ACCOUNT_ID` titok be van állítva; addig jelzi, hogy kimaradt. A helyi Lighthouse CI (`lighthouserc.json`, HTTP/1.1-es statikus szerver) minden más határt változatlanul hibaként kezel, az LCP-t 2,1 s-os hibahatárral, hogy a romlást helyben is elkapja (W4-ben mérve: 2010 ms). A Pages az előnézeti deployokra automatikusan `noindex`-et küld; a tesztadatos oldal így nem kerül keresőbe.
+
+### D-038 · 2026-11-24 · Jogi oldalak a content/legal/ Markdown-fájlokból
+
+Az `/adatkezeles` és az `/impresszum` egy Astro content collectionből (`src/content.config.ts`) épül; oldal csak a meglévő fájlból készül, a lábléc és az űrlap csak meglévő oldalra linkel. Az impresszum tetején a cégadatok a `site.yaml`-ból jönnek (NAP-egyezés a lábléccel és a JSON-LD-vel). Az éles build tartalom-őre mindkét fájlt megköveteli. A jogásznak szóló tervezetek a `docs/legal-drafts/` mappában vannak, a build nem használja őket.
+
+### D-039 · 2026-11-24 · Biztonsági fejlécek, SEO, átirányítások
+
+- `public/_headers`: CSP csak saját originnel (`script-src 'self'`; `style-src 'self' 'unsafe-inline'`, mert a teljes CSS a HTML-be ágyazott – a gyorsabb első festésért), HSTS (`includeSubDomains`, preload nélkül), `nosniff`, `strict-origin-when-cross-origin`, `Permissions-Policy`, `X-Frame-Options: DENY`, COOP; a `/_astro/*` fájlok egy évig gyorsítótárazhatók. A szigetek ehhez külső fájlként épülnek (`vite.build.assetsInlineLimit: 0`; az LCP-n mérhetően nem változtat).
+- SEO: Open Graph és Twitter-kártya minden oldalon, saját OG-kép (`pnpm og` → `public/og.png`, a saját betűkkel; generált ceruzavonal nélkül), JSON-LD `ProfessionalService` a főoldalon csak a meglévő cégadatokkal.
+- `public/_redirects`: `/munkak` → `/#munkak`, `/kapcsolat` → `/#kapcsolat`. A `www` → apex és a `zolbergstudio.com` → `https://zolberg.hu/#munkak` domain-szintű Cloudflare Redirect Rule (LAUNCH_CHECKLIST).

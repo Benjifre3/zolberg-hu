@@ -83,7 +83,7 @@ A helyi Lighthouse CI (szimulált lassú 4G, HTTP/1.1-es statikus szerver, Windo
 | A GYIK 5 kérdése és válasza (megírva, D-034)                                                          | GYIK                        | jóváhagyás tőled: `content/site.yaml` → `faq`              |
 | Szolgáltatás- és folyamat-szövegek (megírva, D-034)                                                   | 6.5, 6.6                    | jóváhagyás tőled: `content/site.yaml`                      |
 | Bemutatkozás (2–3 mondat) és portré (4:5, `content/about/`)                                           | Rólam                       | te                                                         |
-| Adatkezelési tájékoztató, impresszum                                                                  | aloldalak                   | jogi konzultáció                                           |
+| Adatkezelési tájékoztató, impresszum (tervezet: `docs/legal-drafts/`, D-038)                          | `content/legal/*.md`        | jogi konzultáció                                           |
 | Sütibanner nélküli működés megerősítése                                                               | jog                         | jogi konzultáció                                           |
 | OG-kép (1200×630)                                                                                     | SEO                         | én elkészítem a valós tartalomból                          |
 | Ügyfél-logók, vélemény                                                                                | 6.4                         | csak írásos engedéllyel; ha nincs, kimarad                 |

@@ -24,6 +24,8 @@ export default defineConfig({
     inlineStylesheets: 'always', // a teljes CSS ≤ 25 KB: nincs renderblokkoló kérés
   },
   vite: {
+    // A szigetek külső fájlok (nem inline), így a CSP script-src 'self' elég (D-039).
+    build: { assetsInlineLimit: 0 },
     resolve: {
       alias: { '@content': CONTENT_DIR },
     },

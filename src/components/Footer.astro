@@ -7,6 +7,7 @@
 import Wordmark from './Wordmark.astro';
 import { site, telHref } from '../lib/site.ts';
 import { navAnchors, anchorHref, CONTACT_ID } from '../lib/nav.ts';
+import { existingLegal } from '../lib/legal.ts';
 
 interface Props {
   onHome: boolean;
@@ -14,11 +15,7 @@ interface Props {
 const { onHome } = Astro.props;
 const c = site.company;
 
-const pages = import.meta.glob('/src/pages/{adatkezeles,impresszum}.astro');
-const legal = [
-  { path: '/adatkezeles', label: 'Adatkezelési tájékoztató' },
-  { path: '/impresszum', label: 'Impresszum' },
-].filter((l) => `/src/pages${l.path}.astro` in pages);
+const legal = existingLegal().map((p) => ({ path: `/${p.slug}`, label: p.label }));
 
 const hasCompany = c.legal_name || c.address || c.tax_id || c.email || c.phone;
 ---
