@@ -1,0 +1,23 @@
+# zolberg.hu – oldalszintű tartalom és cégadatok
+# Szabály (master prompt 2.1): ha egy adat még nincs meg, az értéke null, és az elem nem
+# jelenik meg. Helyőrző szöveget ([…]) ide ne írj: az éles build tartalom-őre elbukik rajta.
+# A `pnpm build` (éles) a launch_required mezők hiányát is jelzi.
+
+brand: zolberg
+
+meta:
+  title: 'Zolberg – céges weboldal, amit a mérés igazol' # ≤ 60 karakter
+  description: 'Régi vagy lassú céges weboldalak újraépítése. Először mérek, utána tervezek, és az átadáskor a mérés mutatja meg az eredményt.' # ≤ 155 karakter
+
+# Cégadatok (NAP): lábléc, impresszum, JSON-LD – mindenhol innen (10.)
+company:
+  legal_name: null # pl. a cégbejegyzés szerinti név
+  owner_name: null # [Teljes név]
+  address: null # székhely
+  tax_id: null # adószám
+  email: null
+  phone: null # nemzetközi formátumban: +36 …
+
+domains:
+  brand: zolberg.hu
+  sender: zolbergstudio.com

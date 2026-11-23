@@ -1,0 +1,49 @@
+{
+  "name": "zolberg-hu",
+  "private": true,
+  "type": "module",
+  "description": "zolberg.hu – egyoldalas bemutatkozó oldal (Astro, statikus)",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/check-budgets.ts && node scripts/content-guard.ts --release",
+    "build:fixture": "astro build && node scripts/check-budgets.ts && node scripts/content-guard.ts",
+    "preview": "astro preview --port 4321",
+    "check": "astro check",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "fonts": "node scripts/subset-fonts.ts",
+    "grain": "node scripts/make-grain.ts",
+    "test:unit": "node --test \"tests/unit/**/*.test.ts\"",
+    "test:e2e": "playwright test --project=e2e --project=a11y",
+    "test:visual": "playwright test --project=visual",
+    "test:lh": "node scripts/lhci.ts",
+    "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.6",
+    "astro": "^7.4.13",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@axe-core/playwright": "^4.14.0",
+    "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.16.1",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.15.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "globals": "^17.14.0",
+    "node-html-parser": "^9.0.7",
+    "prettier": "^3.10.1",
+    "prettier-plugin-astro": "^1.1.2",
+    "subset-font": "^2.9.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.73.0"
+  },
+  "packageManager": "pnpm@12.23.0"
+}

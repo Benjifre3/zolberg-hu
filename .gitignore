@@ -12,3 +12,6 @@ playwright-report/
 *.log
 .DS_Store
 Thumbs.db
+
+# Windows-on készült vizuális alapképek nem kerülnek a repóba (D-014)
+tests/visual/__screenshots__/*-win32.png

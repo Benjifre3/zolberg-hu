@@ -1,0 +1,26 @@
+---
+/**
+ * Főoldal. W0: csak az alapelrendezés és a tipográfia váza.
+ * A W1-ben ide kerül a fejléc, a hero, a bizonyíték-sáv és a lábléc.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base path="/">
+  <section class="section" aria-labelledby="hero-cim">
+    <div class="container">
+      <h1 id="hero-cim">Céges weboldal, amit a mérés igazol.</h1>
+      <p class="lead">
+        Régi vagy lassú céges weboldalak újraépítése. Először mérek, utána tervezek, és az átadáskor
+        a mérés mutatja meg az eredményt.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lead {
+    margin-block-start: var(--space-4);
+    color: var(--fg-muted);
+  }
+</style>

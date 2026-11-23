@@ -1,0 +1,55 @@
+---
+/**
+ * Alap elrendezés: head (meta, betűk, globális CSS), ugrólink, landmarkok.
+ * A fejléc és a lábléc a W1-ben kerül be (Header.astro, Footer.astro).
+ */
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import { site } from '../lib/site.ts';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Kanonikus útvonal, pl. "/adatkezeles". */
+  path?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = site.meta.title,
+  description = site.meta.description,
+  path = Astro.url.pathname,
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(path === '/index' ? '/' : path, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#F4F1EA" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-body" />
+    <Font cssVariable="--font-mono" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#tartalom">
+      Ugrás a tartalomra
+    </a>
+    <slot name="header" />
+    <main id="tartalom" tabindex="-1">
+      <slot />
+    </main>
+    <slot name="footer" />
+  </body>
+</html>

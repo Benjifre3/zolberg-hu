@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Az oldal nem található – Zolberg" path="/404" noindex>
+  <section class="section" aria-labelledby="hiba-cim">
+    <div class="container">
+      <p class="mono muted">404</p>
+      <h1 id="hiba-cim">Ez az oldal nem található.</h1>
+      <p class="text">
+        Lehet, hogy elírás van a címben, vagy az oldal már nem létezik.{' '}
+        <a href="/">Vissza a főoldalra</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .text {
+    margin-block-start: var(--space-4);
+  }
+</style>

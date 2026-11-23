@@ -1,0 +1,319 @@
+/*
+ * zolberg.hu – az egyetlen globális stíluslap (master prompt 3–4.)
+ * Tartalom: tokenek → reset → alapok → kontextusok → segédosztályok.
+ * A komponensek stílusa scoped <style>-ban van, csak ezekre a tokenekre hivatkozik.
+ */
+
+/* ───────────── Tokenek ───────────── */
+:root {
+  /* Színek – a kontrasztokat a tests/unit/contrast.test.ts ellenőrzi */
+  --paper: #f4f1ea; /* alap háttér */
+  --paper-raised: #fbfaf6; /* kártyák */
+  --ink: #14130f; /* szöveg, sötét sávok – 16,5:1 */
+  --ink-2: #5e5a51; /* másodlagos szöveg – 6,1:1 */
+  --accent: #c2331a; /* CTA, link, címke – papíron 4,92:1, fehér rajta 5,55:1 */
+  --accent-mark: #e8472b; /* csak a kézi jelölés, szövegre soha */
+  --forest: #1e3a2f; /* folyamat-sáv */
+  --accent-on-dark: #ff7a5c; /* akcent sötét háttéren – tintán 7,25:1, erdőzöldön 4,81:1 */
+  --sage: #e3e8dc; /* kép-helyőrzők, másodlagos felületek */
+  --line: #d9d4c7; /* díszítő vonal (kezelőelemen nem) */
+  --field: #6b675e; /* űrlapmező kerete – 5,0:1 */
+  --signal: #2e7d4f; /* állapotpötty – D-012 */
+
+  /* Kontextuális szerepek (a .on-ink / .on-forest felülírja) */
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --fg-muted: var(--ink-2);
+  --link: var(--accent);
+  --focus: var(--accent);
+  --rule: var(--line);
+
+  /* Betűk: a --font-display / --font-body / --font-mono változót az Astro Fonts adja */
+  --step-h1: clamp(3rem, 8.4vw, 7.75rem);
+  --step-h2: clamp(2.1rem, 5vw, 4.25rem);
+  --step-h3: clamp(1.5rem, 2.4vw, 2rem);
+  --step-body: clamp(1.125rem, 1.07rem + 0.24vw, 1.25rem); /* 18–20 px */
+  --step-small: 1rem;
+  --step-mono: 0.8125rem; /* 13 px */
+  --step-mono-sm: 0.75rem; /* 12 px */
+  --tracking-h1: -0.04em;
+  --tracking-display: -0.035em;
+  --measure: 66ch; /* 60–70 karakter */
+
+  /* Térköz: 8 px-es rács */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
+  --space-7: 6rem;
+  --space-8: 8rem;
+  --section: 72px; /* mobil */
+  --margin: 20px; /* mobil */
+  --container: 1280px;
+  --header-h: 68px;
+
+  /* Formák és mélység */
+  --radius-card: 14px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+  --control-h: 52px;
+  --shadow-card: 0 1px 0 rgb(20 19 15 / 0.04), 0 12px 32px -18px rgb(20 19 15 / 0.18);
+  --shadow-card-hover: 0 1px 0 rgb(20 19 15 / 0.05), 0 18px 40px -18px rgb(20 19 15 / 0.24);
+
+  /* Mozgás – csak transform és opacity animálódik (7.) */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 160ms;
+  --dur-base: 200ms;
+
+  color-scheme: light;
+}
+
+@media (min-width: 834px) {
+  :root {
+    --section: 96px;
+    --margin: 48px;
+    --header-h: 80px;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --section: 128px;
+  }
+}
+
+/* ───────────── Reset ───────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+  scroll-padding-top: calc(var(--header-h) + var(--space-2));
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ───────────── Alapok ───────────── */
+body {
+  min-height: 100dvh;
+  background-color: var(--bg);
+  /* Szemcse: 128×128-as csempe, a PNG alfája hordozza az átlátszóságot (4.) */
+  background-image: url('/grain.png');
+  background-size: 128px 128px;
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--step-body);
+  font-weight: 400;
+  line-height: 1.55;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.02;
+  hyphens: manual;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-h1);
+  letter-spacing: var(--tracking-h1);
+  line-height: 0.94;
+}
+
+h2 {
+  font-size: var(--step-h2);
+}
+
+h3 {
+  font-size: var(--step-h3);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+p {
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+strong {
+  font-weight: 600;
+}
+
+q {
+  quotes: '„' '”' '»' '«';
+}
+
+abbr[title] {
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Az ugrólink célja programból kap fókuszt, ott nem kell gyűrű. */
+main:focus {
+  outline: none;
+}
+
+/* ───────────── Kontextusok (D-010) ───────────── */
+.on-ink {
+  --bg: var(--ink);
+  --fg: var(--paper);
+  --fg-muted: rgb(244 241 234 / 0.72);
+  --link: var(--accent-on-dark);
+  --focus: var(--accent-on-dark);
+  --rule: rgb(244 241 234 / 0.18);
+
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+.on-forest {
+  --bg: var(--forest);
+  --fg: var(--paper);
+  --fg-muted: rgb(244 241 234 / 0.78);
+  --link: var(--accent-on-dark);
+  --focus: var(--accent-on-dark);
+  --rule: rgb(244 241 234 / 0.2);
+
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* ───────────── Elrendezés ───────────── */
+.container {
+  width: min(100% - 2 * var(--margin), var(--container));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--section);
+}
+
+/* ───────────── Segédosztályok ───────────── */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--step-mono);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--fg-muted);
+}
+
+.visually-hidden:not(:focus, :active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* ───────────── Felhasználói preferenciák ───────────── */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  body {
+    background-image: none;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .skip-link {
+    display: none;
+  }
+}

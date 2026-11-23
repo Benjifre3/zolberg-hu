@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ASTRO_TELEMETRY_DISABLED: '1'
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  quality:
+    name: Minőségkapuk
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint és formázás
+        run: pnpm lint
+      - name: Típusellenőrzés
+        run: pnpm check
+      - name: Unit tesztek (kontraszt, séma)
+        run: pnpm test:unit
+      - name: A betűfájlok naprakészek
+        run: pnpm fonts && git diff --exit-code src/assets/fonts
+
+      - name: Build (tesztadattal) + költségvetés + tartalom-őr
+        run: pnpm build:fixture
+
+      - name: Playwright böngésző
+        run: pnpm exec playwright install --with-deps chromium
+      - name: e2e + akadálymentesség (axe)
+        run: pnpm test:e2e
+      - name: Vizuális regresszió (390 / 834 / 1440)
+        # D-014: a hiányzó alapképeket elkészíti; ezeket az artefaktból kell commitolni.
+        run: pnpm test:visual --update-snapshots=missing
+      - name: Új vizuális alapképek
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-baselines
+          path: tests/visual/__screenshots__/
+          if-no-files-found: ignore
+      - name: Lighthouse CI (mobil, 3 futás mediánja)
+        run: pnpm test:lh
+      - name: Riportok
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reports
+          path: |
+            playwright-report/
+            .lighthouseci/
+          if-no-files-found: ignore
+
+  release-readiness:
+    name: Élesíthetőség (valós tartalom + tartalom-őr)
+    runs-on: ubuntu-latest
+    # Amíg a valós tartalom (cégadatok, referenciák, mérések) hiányzik, ez szándékosan piros,
+    # de nem blokkolja a fejlesztést. Élesítés előtt zöldnek kell lennie (LAUNCH_CHECKLIST).
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build

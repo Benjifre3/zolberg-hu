@@ -1,0 +1,10 @@
+dist/
+.astro/
+node_modules/
+fonts-src/
+test-results/
+playwright-report/
+.lighthouseci/
+pnpm-lock.yaml
+docs/MASTER_PROMPT.md
+tests/visual/__screenshots__/
