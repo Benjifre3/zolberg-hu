@@ -1,14 +1,24 @@
 ---
 /**
- * Kapcsolat (6.9), tinta háttér. W1: a szekció váza (cím, válaszidő, közvetlen elérhetőség),
- * hogy minden CTA-nak legyen célja. Az űrlap a W4-ben kerül be (a „Három mező, hírlevél
- * nélkül.” mondat is akkor, mert addig nem igaz).
+ * Kapcsolat (6.9), tinta háttér: H2, rövid ígéret a válaszról, e-mail és telefon, 3 mezős űrlap
+ * (látható címkék, autocomplete, magyar hibaüzenetek), alatta az adatkezelési tájékoztató linkje.
+ * JS nélkül natív POST a /api/contact-ra; JS-sel helyi validáció + fetch (W4, D-018, D-035).
  */
+import Arrow from './Arrow.astro';
 import { site, telHref } from '../lib/site.ts';
 import { CONTACT_ID } from '../lib/nav.ts';
+import { HONEYPOT, TIMESTAMP } from '../lib/contact-rules.ts';
 
 const { email, phone } = site.company;
 const days = site.contact.response_days;
+const hasPrivacy =
+  '/src/pages/adatkezeles.astro' in import.meta.glob('/src/pages/adatkezeles.astro');
+
+const fields = [
+  { name: 'company', label: 'Cégnév', type: 'text', auto: 'organization', mode: 'text' },
+  { name: 'website', label: 'Weboldal címe', type: 'text', auto: 'url', mode: 'url' },
+  { name: 'email', label: 'E-mail-cím', type: 'email', auto: 'email', mode: 'email' },
+] as const;
 ---
 
 <section
@@ -17,44 +27,174 @@ const days = site.contact.response_days;
   aria-labelledby="kapcsolat-cim"
 >
   <div class="container contact__inner">
-    <h2 id="kapcsolat-cim">Kérem a mért adatokat.</h2>
-    {days && (
+    <div class="contact__text">
+      <h2 id="kapcsolat-cim">Kérem a mért adatokat.</h2>
       <p class="contact__intro">
-        {days}&nbsp;munkanapon belül rövid, forrással ellátott mérési összefoglalót küldök a saját
-        oldaláról.
+        Három mező, hírlevél nélkül.
+        {days && (
+          <>
+            {' '}
+            {days}&nbsp;munkanapon belül rövid, forrással ellátott mérési összefoglalót küldök a
+            saját oldaláról.
+          </>
+        )}
       </p>
-    )}
-    {(email || phone) && (
-      <ul class="contact__direct" role="list">
-        {email && (
-          <li>
-            <span class="mono muted">E-mail</span>
-            <a href={`mailto:${email}`}>{email}</a>
-          </li>
-        )}
-        {phone && (
-          <li>
-            <span class="mono muted">Telefon</span>
-            <a href={telHref(phone)}>{phone}</a>
-          </li>
-        )}
-      </ul>
-    )}
+      {(email || phone) && (
+        <ul class="contact__direct" role="list">
+          {email && (
+            <li>
+              <span class="mono muted">E-mail</span>
+              <a href={`mailto:${email}`}>{email}</a>
+            </li>
+          )}
+          {phone && (
+            <li>
+              <span class="mono muted">Telefon</span>
+              <a href={telHref(phone)}>{phone}</a>
+            </li>
+          )}
+        </ul>
+      )}
+    </div>
+
+    <form
+      class="cform"
+      method="post"
+      action="/api/contact"
+      novalidate
+      data-contact-form
+      data-placeholder={hasPrivacy ? undefined : 'az adatkezelési tájékoztató linkje hiányzik (W5)'}
+    >
+      {fields.map((f) => (
+        <div class="cform__field">
+          <label for={`cf-${f.name}`}>{f.label}</label>
+          <input
+            id={`cf-${f.name}`}
+            name={f.name}
+            type={f.type}
+            inputmode={f.mode}
+            autocomplete={f.auto}
+            required
+            maxlength={f.name === 'company' ? 120 : 300}
+            spellcheck="false"
+          />
+          <p class="cform__error" id={`cf-${f.name}-hiba`} data-error-for={f.name} hidden />
+        </div>
+      ))}
+      <div class="cform__trap" aria-hidden="true">
+        <label for="cf-fax">Fax (hagyja üresen)</label>
+        <input id="cf-fax" name={HONEYPOT} type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <input type="hidden" name={TIMESTAMP} value="" data-ts />
+      <button type="submit" class="btn btn--primary cform__submit">
+        <span>Kérem a mért adatokat</span>
+        <Arrow />
+      </button>
+      <p class="cform__status" role="status" data-form-status></p>
+      {hasPrivacy && (
+        <p class="cform__privacy">
+          Az adatait csak a válaszhoz használom. <a href="/adatkezeles">Adatkezelési tájékoztató</a>
+        </p>
+      )}
+    </form>
   </div>
 </section>
+
+<script>
+  import { validate, FIELDS, type Errors, type Field } from '../lib/contact-rules.ts';
+
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  if (form) {
+    const ts = form.querySelector<HTMLInputElement>('[data-ts]');
+    if (ts) ts.value = String(Date.now());
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const input = (f: Field) => form.elements.namedItem(f) as HTMLInputElement;
+
+    const show = (errors: Errors) => {
+      for (const f of FIELDS) {
+        const el = input(f);
+        const box = form.querySelector<HTMLElement>(`[data-error-for="${f}"]`);
+        const msg = errors[f];
+        if (box) {
+          box.textContent = msg ?? '';
+          box.hidden = !msg;
+        }
+        if (msg) {
+          el.setAttribute('aria-invalid', 'true');
+          el.setAttribute('aria-describedby', `cf-${f}-hiba`);
+        } else {
+          el.removeAttribute('aria-invalid');
+          el.removeAttribute('aria-describedby');
+        }
+      }
+      const first = FIELDS.find((f) => errors[f]);
+      if (first) input(first).focus();
+    };
+
+    const current = () => validate(Object.fromEntries(FIELDS.map((f) => [f, input(f).value])));
+
+    // Hibás mező javítás közben: a hibaüzenet eltűnik, amint a mező jó.
+    form.addEventListener('input', (e) => {
+      const name = (e.target as HTMLInputElement).name as Field;
+      if (!FIELDS.includes(name) || !input(name).hasAttribute('aria-invalid')) return;
+      if (!current().errors[name]) {
+        const box = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+        if (box) box.hidden = true;
+        input(name).removeAttribute('aria-invalid');
+        input(name).removeAttribute('aria-describedby');
+      }
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const { errors } = current();
+      if (Object.keys(errors).length) {
+        show(errors);
+        if (status) status.textContent = 'Kérem, javítsa a megjelölt mezőket.';
+        return;
+      }
+      show({});
+      if (submit) submit.disabled = true;
+      if (status) status.textContent = 'Küldés folyamatban…';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const data = (await res.json()) as { ok: boolean; errors?: Errors; error?: string };
+        if (data.ok) {
+          window.location.assign('/koszonjuk');
+          return;
+        }
+        if (data.errors) show(data.errors);
+        if (status) status.textContent = data.error ?? 'Kérem, javítsa a megjelölt mezőket.';
+      } catch {
+        // Hálózati hiba: a natív beküldés még működhet (és a szerver a végső bíró).
+        form.submit();
+        return;
+      } finally {
+        if (submit) submit.disabled = false;
+      }
+    });
+  }
+</script>
 
 <style is:global>
   .contact__inner {
     display: grid;
+    gap: var(--space-6);
+  }
+
+  .contact__text {
+    display: grid;
+    align-content: start;
     gap: var(--space-4);
   }
 
   .contact h2 {
     max-width: 14ch;
-  }
-
-  .contact__intro {
-    font-size: var(--step-body);
   }
 
   .contact__direct {
@@ -76,5 +216,73 @@ const days = site.contact.response_days;
     min-height: 44px;
     font-size: 1.25rem;
     font-weight: 600;
+  }
+
+  .cform {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+
+  .cform__field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .cform label {
+    font-weight: 600;
+  }
+
+  .cform input {
+    min-height: var(--control-h);
+    padding-inline: 16px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+
+  .cform input[aria-invalid] {
+    border-color: var(--accent-on-dark);
+  }
+
+  .cform__error,
+  .cform__status {
+    color: var(--accent-on-dark);
+  }
+
+  .cform__error[hidden] {
+    display: none;
+  }
+
+  .cform__trap {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .cform__submit {
+    justify-self: start;
+    margin-block-start: var(--space-1);
+    border: 0;
+  }
+
+  .cform__submit:disabled {
+    opacity: 0.6;
+  }
+
+  .cform__status:empty {
+    display: none;
+  }
+
+  .cform__privacy {
+    color: var(--fg-muted);
+    font-size: 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .contact__inner {
+      grid-template-columns: 6fr 5fr;
+      gap: var(--space-7);
+    }
   }
 </style>

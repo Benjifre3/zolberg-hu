@@ -13,7 +13,7 @@ A gépen nincs Node.js és pnpm, ezek nélkül nem indul az Astro.
 - **(a) Ajánlott:** telepíthetem én: `winget install OpenJS.NodeJS.LTS`, utána `corepack enable pnpm`. Ez rendszerszintű telepítés, ezért kell az engedélyed.
 - (b) Telepíted te, és szólsz, ha kész.
 
-### Q2 · Turnstile vagy a „nincs harmadik féltől származó script” szabály · blokkolja: W4
+### Q2 · Turnstile vagy a „nincs harmadik féltől származó script” szabály · LEZÁRVA (2026-11-24): Turnstile nélkül (D-035)
 
 A 3. szakasz Turnstile-t kér, a 2. szakasz 4. pontja tiltja a harmadik féltől származó scriptet, és ütközéskor a 2. szakasz nyer. A Turnstile a Cloudflare-től töltődik be, és böngészőjeleket dolgoz fel.
 
@@ -59,6 +59,13 @@ A repó most helyi azonosítóval commitol (D-016). Push előtt:
 - van-e már GitHub-repó, privát vagy nyilvános legyen.
 
 ---
+
+### Q8 · Hogyan mérjük a mobil LCP-határt (1,8 s)? · blokkolja: a CI zöld állapotát
+
+A helyi Lighthouse CI (szimulált lassú 4G, HTTP/1.1-es statikus szerver, Windows) a W4 után **2010 ms**-ot mér (W3: 1785 ms), a Performance pontszám 99. Felezéses méréssel kimutattam, hogy a különbséget maga az űrlap okozza (űrlap nélkül 1785 ms, űrlap szkript nélkül 1935 ms, teljes űrlap 2010 ms); a szkriptek kiszervezése, a betű-preload elhagyása, a mono betű kiváltása és a dekódolási mód nem változtatott rajta. Az űrlap a specifikáció része, nem hagyható el.
+
+- **(a) Ajánlott:** az LCP-határt a valós környezetben, a Cloudflare Pages előnézeti deployján mérjük (HTTP/2, valódi edge) a CI-ban, amint van GitHub- és Cloudflare-fiók; a helyi LHCI-ban az LCP addig figyelmeztetés 2,1 s-os határral, minden más határ marad hiba. A specifikáció célja a valós mobil élmény, és a launch-ellenőrzőlista is élesben mér.
+- (b) A helyi határ 1,8 s marad: ekkor a CI piros, amíg a mérést nem visszük át, vagy amíg más tartalmat nem veszünk el.
 
 ## B. Tartalmi helyőrzők (élesítés előtt kell, az építést nem akasztják meg)
 

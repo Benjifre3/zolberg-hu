@@ -1,0 +1,5 @@
+# Cloudflare Pages (D-015). A titkok (EMAIL_API_KEY) és a szolgáltató beállításai a Pages
+# környezeti változói között vannak, nem itt (3.).
+name = "zolberg-hu"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-11-01"

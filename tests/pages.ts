@@ -2,4 +2,5 @@
 export const PAGES = [
   { path: '/', name: 'fooldal' },
   { path: '/404', name: '404' },
+  { path: '/koszonjuk', name: 'koszonjuk' },
 ] as const;

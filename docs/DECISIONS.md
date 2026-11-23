@@ -153,3 +153,15 @@ A W3 négy szekciójával a CSS 26,0 KB lett (keret: 25 KB, tömörítetlenül).
 - A szolgáltatás-, folyamat- és GYIK-szövegeket én írtam (magázás, egyes szám első személy, ígéret és szuperlatívusz nélkül); **jóváhagyásra várnak** (OPEN_QUESTIONS B). Kód nélkül a `content/site.yaml`-ban írhatók át.
 - A 40–60 szavas szabályt a törzsszövegre alkalmazzuk (címek nélkül); a GYIK kérdés–válasz formátuma kivétel. A `tests/unit/copy.test.ts` ellenőrzi, és tiltja a felkiáltójelet, az emojit, a „csapatunk”-féle többes számot és a szuperlatívuszokat.
 - A folyamat időkerete csak kitöltve jelenik meg; a „Rólam” szekció csak névvel és bemutatkozással (a portré opcionális, amíg nincs valódi fotó). Az ár-kérdés a pricing-döntés után kerül a GYIK-be.
+
+### D-035 · 2026-11-24 · Űrlap Turnstile nélkül (Q2, a felhasználó döntése)
+
+A 2. szakasz 4. pontja (nincs harmadik féltől származó script) elsőbbséget kap a 3. szakasz Turnstile-jával szemben. A spamvédelem: rejtett honeypot mező, időcsapda (JS-sel töltött időbélyeg; 3 mp-nél gyorsabb beküldés csendben eldobva), szerveroldali validáció és hosszkorlát, élesben egy Cloudflare sebességkorlát-szabály a `/api/contact`-ra (LAUNCH_CHECKLIST). A D-017-ben tervezett Turnstile-kapcsoló nem készül el; a CSP-ben csak saját origin lesz.
+
+### D-036 · 2026-11-24 · Az űrlap felépítése (W4)
+
+- Közös szabálymodul (`src/lib/contact-rules.ts`) a böngészőben és a Pages Functionben: ugyanazok a magyar hibaüzenetek, a végső döntés a szerveré. A webcímet `pelda.hu` alakban is elfogadja (https-re normalizálja).
+- A `/api/contact` két módot ismer: JS-sel JSON-válasz (a sziget mutatja a hibákat, fókusz az első hibás mezőre, `aria-invalid` + `aria-describedby`); JS nélkül siker esetén 303 a `/koszonjuk`-ra, hiba esetén szerveroldali hibaoldal a beírt értékekkel. A függvény válaszai saját, szigorú CSP-fejlécet kapnak.
+- A levélküldés cserélhető adapter mögött van (`src/server/mailer.ts`). Amíg a Q3 nincs eldöntve, csak a `dry-run` mód él (tesztek, fejlesztés); szolgáltató nélkül a szerver 503-at ad, és az űrlap nem jelez hamis sikert.
+- Ha nincs adatkezelési tájékoztató oldal, az űrlap `data-placeholder` jelölést kap, és az éles build tartalom-őre elbukik (adatkezelési link nélkül nem élesítünk).
+- Az e2e tesztek a Cloudflare helyi futtatókörnyezetén (`wrangler pages dev`, 8788-as port) futnak, így a függvény is tesztelt; a pnpm csak az `esbuild` és a `workerd` telepítési szkriptjét futtathatja (`pnpm-workspace.yaml` → `allowBuilds`).

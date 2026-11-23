@@ -1,3 +1,7 @@
 # pnpm-beállítások (pnpm 10+ ezeket innen olvassa, nem a .npmrc-ből)
 shellEmulator: true
 engineStrict: true
+# Csak ezek futtathatnak telepítés utáni szkriptet (a wrangler helyi futtatókörnyezete)
+allowBuilds:
+  esbuild: true
+  workerd: true

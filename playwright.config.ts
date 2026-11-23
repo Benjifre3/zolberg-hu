@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4321;
+const PORT = 8788;
 const CI = !!process.env['CI'];
 
 /** Töréspontok (master prompt 8.) */
@@ -41,8 +41,11 @@ export default defineConfig({
     { name: 'a11y', testMatch: /a11y\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
     { name: 'visual', testMatch: /visual\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
   ],
+  // A Cloudflare Pages helyi futtatókörnyezete: statikus fájlok + a /api/contact függvény.
+  // A levélküldés dry-run módban fut (src/server/mailer.ts).
   webServer: {
-    command: 'pnpm preview',
+    command: `pnpm exec wrangler pages dev dist --port ${PORT} --binding EMAIL_PROVIDER=dry-run`,
+    env: { WRANGLER_SEND_METRICS: 'false' },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !CI,
     timeout: 60_000,
