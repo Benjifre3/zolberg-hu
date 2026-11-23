@@ -23,7 +23,7 @@ const legal = [
 const hasCompany = c.legal_name || c.address || c.tax_id || c.email || c.phone;
 ---
 
-<footer class="site-footer">
+<footer class="site-footer defer-render">
   <div class="container">
     <div class="site-footer__cols">
       {hasCompany && (

@@ -4,10 +4,13 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProofBand from '../components/ProofBand.astro';
 import Contact from '../components/Contact.astro';
+import Works from '../components/Works.astro';
+import { hasWorks } from '../lib/nav.ts';
 ---
 
 <Base path="/">
   <Hero />
   <ProofBand />
+  {hasWorks && <Works />}
   <Contact />
 </Base>

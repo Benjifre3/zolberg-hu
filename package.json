@@ -21,7 +21,8 @@
     "test:visual": "playwright test --project=visual",
     "test:lh": "node scripts/lhci.ts",
     "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e",
-    "shots:fixture": "node scripts/make-fixture-shots.ts"
+    "shots:fixture": "node scripts/make-fixture-shots.ts",
+    "shots": "node scripts/screenshot-works.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",

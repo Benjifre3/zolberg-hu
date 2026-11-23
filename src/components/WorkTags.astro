@@ -1,0 +1,44 @@
+---
+/**
+ * Munka-címkék: iparág, munkatípus, ügyfélmunka / „Saját koncepciómunka” (2.2: a koncepció-
+ * munka mindenhol jelölve). A mérés-címkék (MetricTags) külön komponens.
+ */
+import { TYPE_LABEL, type Work } from '../lib/portfolio.ts';
+
+interface Props {
+  work: Work;
+  industry?: boolean;
+}
+const { work, industry = true } = Astro.props;
+---
+
+<ul class="work-tags mono" role="list">
+  {industry && <li>{work.industry}</li>}
+  {work.work_type && <li>{work.work_type}</li>}
+  <li class:list={['work-tags__type', { 'is-concept': work.type === 'concept_demo' }]}>
+    {TYPE_LABEL[work.type]}
+  </li>
+</ul>
+
+<style>
+  .work-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .work-tags li {
+    padding: 3px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+
+  .work-tags .is-concept {
+    border-color: currentColor;
+    color: var(--accent);
+  }
+</style>

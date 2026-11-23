@@ -5,7 +5,7 @@
 import { approvedWorks } from './portfolio.ts';
 
 export const SECTIONS = {
-  works: false, // W2
+  works: true, // W2
   services: false, // W3
   process: false, // W3
 } as const;

@@ -1,0 +1,109 @@
+---
+/**
+ * Kiemelt munka (6.4, D-006): teljes szélességű kártya, balra nagy kép (≈60%), jobbra címkék,
+ * név, egy mondat „mit csináltam + mért eredmény” mintára, alatta legfeljebb 3 metrika
+ * előtte → utána formában. Alatta ugyanarra a munkára az előtte/utána csúszka.
+ */
+import { Picture } from 'astro:assets';
+import BrowserFrame from './BrowserFrame.astro';
+import WorkTags from './WorkTags.astro';
+import MetricTags from './MetricTags.astro';
+import BeforeAfter from './BeforeAfter.astro';
+import Arrow from './Arrow.astro';
+import type { Work } from '../lib/portfolio.ts';
+import { workImage } from '../lib/images.ts';
+import { displayDomain } from '../lib/format.ts';
+
+interface Props {
+  work: Work;
+}
+const { work } = Astro.props;
+---
+
+<article
+  class="featured"
+  data-work-type={work.type}
+  data-work-id={work.id}
+  aria-labelledby={`munka-${work.id}`}
+>
+  <div class="featured__card">
+    {work.images && (
+      <BrowserFrame domain={displayDomain(work.live_url)} class="featured__media">
+        <Picture
+          src={workImage(work.images.desktop)}
+          formats={['avif', 'webp']}
+          widths={[480, 768, 1024, 1280]}
+          sizes="(min-width: 1100px) 720px, (min-width: 834px) calc(100vw - 96px), calc(100vw - 40px)"
+          quality={62}
+          alt={work.images.alt_desktop}
+          loading="lazy"
+          decoding="async"
+        />
+      </BrowserFrame>
+    )}
+    <div class="featured__body">
+      <p class="featured__eyebrow mono">Kiemelt munka</p>
+      <WorkTags work={work} />
+      <h3 id={`munka-${work.id}`}>{work.name}</h3>
+      <p class="featured__text">{work.description}</p>
+      <MetricTags work={work} large />
+      <a class="featured__live" href={work.live_url} rel="noopener">
+        Élő oldal: {displayDomain(work.live_url)}
+        <Arrow />
+      </a>
+    </div>
+  </div>
+  <BeforeAfter work={work} />
+</article>
+
+<style>
+  .featured {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .featured__card {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .featured__body {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .featured__eyebrow {
+    color: var(--accent);
+  }
+
+  .featured__body h3 {
+    margin-block-start: var(--space-1);
+    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+    font-weight: 700;
+  }
+
+  .featured__text {
+    margin-block-end: var(--space-2);
+    hyphens: manual; /* márkanevek (pl. PageSpeed) ne törjenek */
+  }
+
+  .featured__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 44px;
+    margin-block-start: var(--space-1);
+    color: var(--fg);
+    font-weight: 600;
+    text-underline-offset: 0.3em;
+  }
+
+  @media (min-width: 1100px) {
+    .featured__card {
+      grid-template-columns: 3fr 2fr;
+      gap: var(--space-5);
+      align-items: center;
+    }
+  }
+</style>

@@ -1,0 +1,165 @@
+---
+/**
+ * Munkák (6.4, id="munkak" – ide érkezik a levél linkje). Fej, kiemelt munka + csúszka,
+ * iparági szűrő, 2 oszlopos rács, koncepció-lábjegyzet. Csak approved_for_outreach: true.
+ * A szűrő JS nélkül rejtve van, és minden munka látszik.
+ */
+import SectionHead from './SectionHead.astro';
+import FeaturedWork from './FeaturedWork.astro';
+import WorkCard from './WorkCard.astro';
+import { approvedWorks, featuredWork } from '../lib/portfolio.ts';
+import { industries, industryKey } from '../lib/metrics.ts';
+import { CONTACT_ID } from '../lib/nav.ts';
+
+const grid = approvedWorks.filter((w) => w !== featuredWork);
+const filters = industries(grid);
+const hasConcept = approvedWorks.some((w) => w.type === 'concept_demo');
+---
+
+<section id="munkak" class="works section defer-render" aria-labelledby="munkak-cim">
+  <div class="container">
+    <SectionHead
+      id="munkak-cim"
+      title="Munkák, mérésekkel együtt."
+      link={{ href: `#${CONTACT_ID}`, label: 'Esettanulmányt kérek' }}
+    />
+
+    {featuredWork && <FeaturedWork work={featuredWork} />}
+
+    {grid.length > 0 && (
+      <div class="works__more" data-work-filter-root>
+        {filters.length > 1 && (
+          <div
+            class="works__filter"
+            role="group"
+            aria-label="Szűrés iparág szerint"
+            hidden
+            data-work-filter
+          >
+            <button type="button" class="pill" aria-pressed="true" data-filter="*">
+              Mind
+            </button>
+            {filters.map((f) => (
+              <button type="button" class="pill" aria-pressed="false" data-filter={industryKey(f)}>
+                {f}
+              </button>
+            ))}
+          </div>
+        )}
+        <p class="visually-hidden" aria-live="polite" data-work-filter-status />
+        <ul class="works__grid" role="list">
+          {grid.map((w) => (
+            <WorkCard work={w} />
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {hasConcept && (
+      <p class="works__note mono">
+        A koncepciómunkák fiktív cégekre készült tervek, nem ügyfélmunkák.
+      </p>
+    )}
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-work-filter-root]');
+  const bar = root?.querySelector<HTMLElement>('[data-work-filter]');
+  if (root && bar) {
+    const buttons = [...bar.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-industry]')];
+    const status = root.querySelector<HTMLElement>('[data-work-filter-status]');
+    bar.hidden = false;
+    bar.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('[data-filter]');
+      if (!button) return;
+      const key = button.dataset['filter'];
+      for (const b of buttons) b.setAttribute('aria-pressed', String(b === button));
+      let shown = 0;
+      for (const card of cards) {
+        const visible = key === '*' || card.dataset['industry'] === key;
+        card.hidden = !visible;
+        if (visible) shown++;
+      }
+      if (status) status.textContent = `${shown} munka látható.`;
+    });
+  }
+</script>
+
+<style>
+  .works__more {
+    margin-block-start: var(--space-7);
+  }
+
+  .works__filter {
+    display: flex;
+    gap: var(--space-1);
+    margin-block-end: var(--space-5);
+    /* mobilon vízszintesen görgethető sor (8.: az egyetlen kivétel) */
+    overflow-x: auto;
+    padding-block: 4px;
+    margin-inline: calc(-1 * var(--margin));
+    padding-inline: var(--margin);
+    scrollbar-width: none;
+  }
+
+  .works__filter[hidden] {
+    display: none;
+  }
+
+  .pill {
+    flex: none;
+    min-height: 44px;
+    padding-inline: 1.1em;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--paper-raised);
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 500;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+
+  .pill:hover {
+    border-color: var(--ink);
+  }
+
+  .pill[aria-pressed='true'] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .works__grid {
+    display: grid;
+    gap: var(--space-7) var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .works__grid :global([hidden]) {
+    display: none;
+  }
+
+  .works__note {
+    margin-block-start: var(--space-6);
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 834px) {
+    .works__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .works__filter {
+      flex-wrap: wrap;
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow: visible;
+    }
+  }
+</style>

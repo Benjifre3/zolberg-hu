@@ -1,0 +1,198 @@
+---
+/**
+ * Előtte/utána csúszka (6.4, 4. aláíró elem 3.): azonos méretű, azonos kivágású képpár.
+ * Középről indul; egérrel, érintéssel és nyílbillentyűkkel is húzható – ez egy natív
+ * input[type=range], címkével és aria-valuetext-tel („Előtte 30%”, 10.). A látható fogantyú
+ * a fókuszgyűrűt is mutatja. JS nélkül a kép 50%-on áll, a csúszka el van rejtve.
+ */
+import { Image } from 'astro:assets';
+import type { Work } from '../lib/portfolio.ts';
+import { workImage } from '../lib/images.ts';
+
+interface Props {
+  work: Work;
+}
+const { work } = Astro.props;
+const before = work.images?.before;
+const after = work.images?.after;
+const sizes =
+  '(min-width: 1440px) 1280px, (min-width: 834px) calc(100vw - 96px), calc(100vw - 40px)';
+const widths = [480, 768, 1024, 1280, 1440];
+const label = `Előtte–utána összehasonlítás: ${work.name}`;
+---
+
+{before && after && (
+  <figure class="ba" data-before-after>
+    <div class="ba__stage">
+      <Image
+        src={workImage(after)}
+        widths={widths}
+        sizes={sizes}
+        alt={`${work.name}: az új oldal.`}
+        loading="lazy"
+        decoding="async"
+        class="ba__img ba__img--after"
+      />
+      <div class="ba__before" data-ba-before>
+        <Image
+          src={workImage(before)}
+          widths={widths}
+          sizes={sizes}
+          alt={`${work.name}: a régi oldal${work.year_before ? ` (${work.year_before})` : ''}.`}
+          loading="lazy"
+          decoding="async"
+          class="ba__img"
+        />
+      </div>
+      <span class="ba__tag ba__tag--before mono" aria-hidden="true">
+        Előtte{work.year_before ? ` · ${work.year_before}` : ''}
+      </span>
+      <span class="ba__tag ba__tag--after mono" aria-hidden="true">
+        Utána
+      </span>
+      <span class="ba__handle" aria-hidden="true" data-ba-handle>
+        <span class="ba__knob">
+          <svg viewBox="0 0 24 24" width="20" height="20" focusable="false">
+            <path
+              d="M9 7 4 12l5 5M15 7l5 5-5 5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+      </span>
+      <label class="visually-hidden" for={`ba-${work.id}`}>
+        {label}
+      </label>
+      <input
+        id={`ba-${work.id}`}
+        class="ba__range"
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        value="50"
+        aria-valuetext="Előtte 50%"
+        hidden
+        data-ba-range
+      />
+    </div>
+    <figcaption class="ba__caption mono">
+      Az előtte és az utána kép azonos nézetből és kivágással készült.
+    </figcaption>
+  </figure>
+)}
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-before-after]')) {
+    const range = root.querySelector<HTMLInputElement>('[data-ba-range]');
+    if (!range) continue;
+    const update = () => {
+      const v = Number(range.value);
+      root.style.setProperty('--pos', `${v}%`);
+      range.setAttribute('aria-valuetext', `Előtte ${v}%`);
+    };
+    range.hidden = false;
+    range.addEventListener('input', update);
+    update();
+  }
+</script>
+
+<style>
+  .ba {
+    --pos: 50%;
+
+    margin: 0;
+  }
+
+  .ba__stage {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(20 19 15 / 0.1);
+    border-radius: var(--radius-card);
+    background: var(--sage);
+    box-shadow: var(--shadow-card);
+    user-select: none;
+  }
+
+  .ba__stage :global(.ba__img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .ba__before {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+  }
+
+  .ba__tag {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background: rgb(20 19 15 / 0.82);
+    color: var(--paper);
+  }
+
+  .ba__tag--before {
+    inset-inline-start: var(--space-2);
+  }
+
+  .ba__tag--after {
+    inset-inline-end: var(--space-2);
+  }
+
+  .ba__handle {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--pos);
+    width: 2px;
+    margin-inline-start: -1px;
+    background: var(--paper);
+    box-shadow: 0 0 0 1px rgb(20 19 15 / 0.25);
+    pointer-events: none;
+  }
+
+  .ba__knob {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 6px 18px -6px rgb(20 19 15 / 0.45);
+    transform: translate(-50%, -50%);
+  }
+
+  /* A natív csúszka a teljes képet lefedi: kattintás, húzás, érintés mind működik. */
+  .ba__range {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    touch-action: pan-y;
+  }
+
+  .ba__stage:has(.ba__range:focus-visible) .ba__knob {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .ba__caption {
+    margin-block-start: var(--space-2);
+    color: var(--fg-muted);
+    font-size: var(--step-mono-sm);
+  }
+</style>

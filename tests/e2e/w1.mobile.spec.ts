@@ -19,7 +19,7 @@ test('a hero-kép teteje ≤ 620 px 390×844-en', async ({ page }) => {
 
 test('érintési célok ≥ 44 px a fejlécben', async ({ page }) => {
   await page.goto('/');
-  for (const link of await page.locator('[data-site-header] a').all()) {
+  for (const link of await page.locator('[data-site-header] a:visible').all()) {
     const box = await link.boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
   }

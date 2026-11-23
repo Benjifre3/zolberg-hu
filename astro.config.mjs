@@ -17,6 +17,8 @@ export default defineConfig({
   // Astro 7 alapértéke 'jsx', ami eltüntetheti a szóközt két inline elem között
   // (magyar szövegben a kiemelt szavak körül ez hibát okozna).
   compressHTML: true,
+  // Rövidebb scoped szelektorok (.astro-xxxx a [data-astro-cid-xxxx] helyett): ~2 KB CSS (9.)
+  scopedStyleStrategy: 'class',
   build: {
     format: 'file', // /adatkezeles.html → /adatkezeles (Cloudflare Pages)
     inlineStylesheets: 'always', // a teljes CSS ≤ 25 KB: nincs renderblokkoló kérés

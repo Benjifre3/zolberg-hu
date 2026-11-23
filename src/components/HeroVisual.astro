@@ -40,6 +40,7 @@ const work = featuredWork?.images ? featuredWork : null;
           alt={work.images.alt_mobile}
           loading="eager"
           decoding="async"
+          fetchpriority="low"
         />
       </PhoneFrame>
     </div>

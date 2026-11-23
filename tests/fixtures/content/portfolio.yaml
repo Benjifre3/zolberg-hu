@@ -16,6 +16,8 @@
   images:
     desktop: teszt-gepgyar-1440.png
     mobile: teszt-gepgyar-390.png
+    before: teszt-gepgyar-elotte.png
+    after: teszt-gepgyar-1440.png
     alt_desktop: A Teszt Gépgyártó Kft. tesztoldala asztali nézetben, ajánlatkérő gombbal.
     alt_mobile: A Teszt Gépgyártó Kft. tesztoldala telefonon, a termékkategóriákkal.
   metrics:

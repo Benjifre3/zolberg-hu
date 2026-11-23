@@ -1,0 +1,85 @@
+---
+/**
+ * Mono adatcímkék (4. aláíró elem 2.): „PageSpeed mobil 41 → 97”. Csak valós, dátumozott
+ * mérésből; a forrás és a dátum az elem attribútumaiban (tartalom-őr) és alatta szövegesen.
+ */
+import type { Work } from '../lib/portfolio.ts';
+import { metricChange, provenance } from '../lib/metrics.ts';
+
+interface Props {
+  work: Work;
+  limit?: number;
+  /** nagy változat (kiemelt munka): soronként egy mérés */
+  large?: boolean;
+}
+const { work, limit = 3, large = false } = Astro.props;
+const metrics = work.metrics.slice(0, limit);
+---
+
+{metrics.length > 0 && (
+  <div class:list={['metrics', { 'metrics--large': large }]}>
+    <ul class="metrics__list mono" role="list">
+      {metrics.map((m) => (
+        <li data-metric data-source={m.source} data-measured-at={m.measured_at}>
+          <span class="metrics__label">{m.label}</span>
+          <span class="metrics__value">{metricChange(m)}</span>
+        </li>
+      ))}
+    </ul>
+    {provenance(work).map((line) => (
+      <p class="metrics__source mono">{line}</p>
+    ))}
+  </div>
+)}
+
+<style>
+  .metrics__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .metrics__list li {
+    display: inline-flex;
+    gap: 0.6em;
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--sage);
+    color: var(--ink);
+  }
+
+  .metrics__label {
+    color: var(--ink-2);
+  }
+
+  .metrics__source {
+    margin-block-start: var(--space-1);
+    color: var(--ink-2);
+    font-size: var(--step-mono-sm);
+  }
+
+  .metrics--large .metrics__list {
+    display: grid;
+    gap: 0;
+  }
+
+  .metrics--large .metrics__list li {
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-block-end: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    font-size: var(--step-mono);
+  }
+
+  .metrics--large .metrics__value {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+</style>

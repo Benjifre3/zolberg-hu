@@ -1,0 +1,135 @@
+---
+/**
+ * Munkakártya (6.4, D-004): 16:10 böngészőkeret → név + iparág egy sorban → egy mondat →
+ * mono metrika-címkék → típuscímke. Minden szöveg mindig látszik (nincs hover-függő tartalom).
+ * Hover csak `hover: hover` eszközön: a kép 1,035-ös lassú nagyítása, a keret 4 px-es emelése.
+ */
+import { Picture } from 'astro:assets';
+import BrowserFrame from './BrowserFrame.astro';
+import WorkTags from './WorkTags.astro';
+import MetricTags from './MetricTags.astro';
+import Arrow from './Arrow.astro';
+import type { Work } from '../lib/portfolio.ts';
+import { workImage } from '../lib/images.ts';
+import { displayDomain } from '../lib/format.ts';
+import { industryKey } from '../lib/metrics.ts';
+import { CONTACT_ID } from '../lib/nav.ts';
+
+interface Props {
+  work: Work;
+}
+const { work } = Astro.props;
+---
+
+<li
+  class="work-card"
+  data-work-type={work.type}
+  data-work-id={work.id}
+  data-industry={industryKey(work.industry)}
+>
+  <article aria-labelledby={`munka-${work.id}`}>
+    {work.images && (
+      <BrowserFrame domain={displayDomain(work.live_url)} class="work-card__media">
+        <Picture
+          src={workImage(work.images.desktop)}
+          formats={['avif', 'webp']}
+          widths={[400, 640, 800, 1200]}
+          sizes="(min-width: 1440px) 616px, (min-width: 834px) calc((100vw - 144px) / 2), calc(100vw - 40px)"
+          quality={60}
+          alt={work.images.alt_desktop}
+          loading="lazy"
+          decoding="async"
+        />
+      </BrowserFrame>
+    )}
+    <div class="work-card__body">
+      <h3 id={`munka-${work.id}`} class="work-card__title">
+        {work.name}
+        <span class="work-card__industry">{work.industry}</span>
+      </h3>
+      <p class="work-card__text">{work.description}</p>
+      <MetricTags work={work} />
+      <WorkTags work={work} industry={false} />
+      <p class="work-card__links">
+        <a href={`#${CONTACT_ID}`}>
+          Esettanulmányt kérek
+          <Arrow />
+        </a>
+        <a href={work.live_url} rel="noopener">
+          Élő oldal
+          <Arrow />
+        </a>
+      </p>
+    </div>
+  </article>
+</li>
+
+<style>
+  .work-card article {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .work-card :global(.work-card__media) {
+    transition:
+      transform 320ms var(--ease-out),
+      box-shadow 320ms var(--ease-out);
+  }
+
+  .work-card :global(.work-card__media img) {
+    transition: transform 700ms var(--ease-out);
+  }
+
+  .work-card__body {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .work-card__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25em 0.6em;
+    font-size: clamp(1.4rem, 1.1rem + 0.8vw, 1.75rem);
+    font-weight: 700;
+  }
+
+  .work-card__industry {
+    color: var(--ink-2);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .work-card__text {
+    hyphens: manual;
+  }
+
+  .work-card__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+  }
+
+  .work-card__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 44px;
+    color: var(--fg);
+    font-weight: 600;
+    text-underline-offset: 0.3em;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .work-card:hover :global(.work-card__media) {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card-hover);
+    }
+
+    .work-card:hover :global(.work-card__media img) {
+      transform: scale(1.035);
+    }
+  }
+</style>

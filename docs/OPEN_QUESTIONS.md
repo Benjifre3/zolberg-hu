@@ -30,7 +30,7 @@ Melyik szolgáltató küldje az űrlap levelét, és melyik címre?
 - (c) Már van szolgáltatód (pl. az OutreachEngine-hez): akkor azt használom.
   A kulcs csak környezeti változóban lesz (`EMAIL_API_KEY`), a repóba nem kerül.
 
-### Q4 · A `portfolio.yaml` kanonikus helye és a séma bővítése · blokkolja: W2
+### Q4 · A `portfolio.yaml` kanonikus helye és a séma bővítése · LEZÁRVA (2026-11-23): a javaslat szerint (D-030)
 
 A specifikáció szerint a weboldal és az OutreachEngine ugyanazt a fájlt használja. Az OutreachEngine kódja nincs a gépen.
 

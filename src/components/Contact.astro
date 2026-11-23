@@ -11,7 +11,11 @@ const { email, phone } = site.company;
 const days = site.contact.response_days;
 ---
 
-<section id={CONTACT_ID} class="contact on-ink section" aria-labelledby="kapcsolat-cim">
+<section
+  id={CONTACT_ID}
+  class="contact on-ink section defer-render"
+  aria-labelledby="kapcsolat-cim"
+>
   <div class="container contact__inner">
     <h2 id="kapcsolat-cim">Kérem a mért adatokat.</h2>
     {days && (

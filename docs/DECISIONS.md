@@ -125,3 +125,21 @@ Minden CTA a `#kapcsolat`-ra mutat, ezért a szekció váza (cím, válaszidő, 
 ### D-029 · 2026-11-23 · Állapotváltás színnel is lehet
 
 A 7. szakasz szerint „csak transform és opacity animálódik”. Ezt a kulcskockás animációkra alkalmazzuk (H1-beúszás, ceruzajelölés, hover-nagyítás). A gombok és linkek 150–200 ms-os állapotváltása (7. szakasz 4. pont) színátmenet, ez olcsó, és a specifikáció maga sorolja az effektek közé.
+
+### D-030 · 2026-11-23 · A portfolio.yaml kanonikus helye (Q4, a felhasználó döntése)
+
+A referenciák egyetlen forrása a weboldal repójának `content/portfolio.yaml`-ja (a képek és a nyers mérések is itt vannak). Az OutreachEngine innen olvas (git submodule vagy másolás hash-ellenőrzéssel – az OutreachEngine építésekor dől el). A séma az OutreachEngine kötelező mezőit változatlanul hagyja, a weboldal csak opcionális mezőket ad hozzá (`featured`, `year_before`, `work_type`, `permission`, `images`, `metrics`); az OutreachEngine validátorának az ismeretlen mezőket el kell fogadnia.
+
+### D-031 · 2026-11-24 · Teljesítmény-finomítások a W2-ben
+
+- `scopedStyleStrategy: 'class'`: a scoped szelektorok `.astro-xxxx` alakúak a `[data-astro-cid-xxxx]` helyett; a CSS 24,6 KB-ról 22,7 KB-ra csökkent (keret: 25 KB, tömörítetlenül mérve – a szigorúbb értelmezés).
+- A hajtás alatti blokkok (munkák, kapcsolat, lábléc) `content-visibility: auto`-t kapnak (`.defer-render`).
+- A hero telefonképe `fetchpriority="low"`: nem LCP-elem, ne versenyezzen a fő képpel. Ezzel a mobil LCP 1860 ms-ról 1785 ms-ra csökkent (tesztképpel).
+- A mono szövegek és a munkaleírások nem kapnak automatikus elválasztást (márkanevek, pl. „PageSpeed”).
+
+### D-032 · 2026-11-24 · Munkák: elrendezési részletek
+
+- A rács a kiemelt munkán kívüli jóváhagyott munkákat mutatja; a szűrő ezek iparágaiból épül, és csak legalább 2 iparágnál jelenik meg. JS nélkül rejtve van, minden munka látszik.
+- A kártyán két link van: „Esettanulmányt kérek” (→ `#kapcsolat`, esettanulmány-oldal még nincs) és „Élő oldal” (a `live_url`).
+- A kiemelt munka és a hero ugyanazt a munkát mutatja (a specifikáció mindkettőt a legerősebb munkára írja).
+- Az előtte/utána csúszka natív `input[type=range]`, amely átlátszóan lefedi a képpárt; a látható fogantyú mutatja a fókuszt. A képpárnak azonos méretűnek és kivágásúnak kell lennie (`pnpm shots -- --only <id> --url <régi URL> --suffix elotte`).

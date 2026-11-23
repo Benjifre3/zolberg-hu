@@ -243,6 +243,15 @@ main:focus {
   padding-block: var(--section);
 }
 
+/*
+ * A hajtás alatti blokkok csak a közelükbe görgetve renderelődnek: a képeik nem versenyeznek
+ * a hero LCP-képével (9.). Az auto kulcsszó megjegyzi a valós méretet, így nincs ugrálás.
+ */
+.defer-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1200px;
+}
+
 /* ───────────── Segédosztályok ───────────── */
 .mono {
   font-family: var(--font-mono);
@@ -251,6 +260,7 @@ main:focus {
   letter-spacing: 0;
   line-height: 1.4;
   font-variant-numeric: tabular-nums;
+  hyphens: manual;
 }
 
 .muted {

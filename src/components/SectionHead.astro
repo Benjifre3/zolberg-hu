@@ -1,0 +1,75 @@
+---
+/**
+ * Szekciófej (D-005): H2 balra; opcionálisan jobbra zárt link ugyanabban a sorban (Framer-elv),
+ * vagy bevezető bekezdés a 7–12. oszlopban (Ramotion-elv). 834 px alatt egymás alatt.
+ */
+import Button from './Button.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  link?: { href: string; label: string };
+}
+const { id, title, link } = Astro.props;
+const hasIntro = Astro.slots.has('default');
+---
+
+<div class:list={['section-head', { 'section-head--intro': hasIntro }]}>
+  <h2 id={id}>{title}</h2>
+  {link && (
+    <Button href={link.href} variant="quiet" arrow class="section-head__link">
+      {link.label}
+    </Button>
+  )}
+  {hasIntro && (
+    <div class="section-head__intro">
+      <slot />
+    </div>
+  )}
+</div>
+
+<style>
+  .section-head {
+    display: grid;
+    gap: var(--space-3);
+    margin-block-end: var(--space-6);
+  }
+
+  .section-head h2 {
+    max-width: 18ch;
+  }
+
+  .section-head__intro {
+    color: var(--fg-muted);
+  }
+
+  @media (min-width: 834px) {
+    .section-head {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: end;
+      gap: var(--space-3);
+    }
+
+    .section-head h2 {
+      grid-column: 1 / span 8;
+    }
+
+    .section-head :global(.section-head__link) {
+      grid-column: 9 / -1;
+      justify-self: end;
+    }
+
+    .section-head--intro {
+      align-items: start;
+    }
+
+    .section-head--intro h2 {
+      grid-column: 1 / span 5;
+    }
+
+    .section-head__intro {
+      grid-column: 7 / -1;
+      padding-block-start: 0.6em;
+    }
+  }
+</style>
