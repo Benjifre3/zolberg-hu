@@ -73,9 +73,9 @@ A repó most helyi azonosítóval commitol (D-016). Push előtt:
 | A folyamat 4 lépésének időkerete ([X] nap/hét)                                                        | Folyamat                    | te                                                         |
 | [X] munkanapon belül (válaszidő)                                                                      | Kapcsolat, `/koszonjuk`     | te                                                         |
 | Árak vagy csomagnevek ([pricing döntés])                                                              | Szolgáltatás, GYIK          | te; ha nincs döntés, kimarad                               |
-| A GYIK 5 kérdése és válasza (megírva, D-034)                                                          | GYIK                        | jóváhagyás tőled: →                                        |
-| Szolgáltatás- és folyamat-szövegek (megírva, D-034)                                                   | 6.5, 6.6                    | jóváhagyás tőled:                                          |
-| Bemutatkozás (2–3 mondat) és portré (4:5, )                                                           | Rólam                       | te                                                         |
+| A GYIK 5 kérdése és válasza (megírva, D-034)                                                          | GYIK                        | jóváhagyás tőled: `content/site.yaml` → `faq`              |
+| Szolgáltatás- és folyamat-szövegek (megírva, D-034)                                                   | 6.5, 6.6                    | jóváhagyás tőled: `content/site.yaml`                      |
+| Bemutatkozás (2–3 mondat) és portré (4:5, `content/about/`)                                           | Rólam                       | te                                                         |
 | Adatkezelési tájékoztató, impresszum                                                                  | aloldalak                   | jogi konzultáció                                           |
 | Sütibanner nélküli működés megerősítése                                                               | jog                         | jogi konzultáció                                           |
 | OG-kép (1200×630)                                                                                     | SEO                         | én elkészítem a valós tartalomból                          |
