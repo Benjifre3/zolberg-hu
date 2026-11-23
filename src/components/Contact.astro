@@ -63,7 +63,9 @@ const fields = [
       action="/api/contact"
       novalidate
       data-contact-form
-      data-placeholder={hasPrivacy ? undefined : 'nincs adatkezelési tájékoztató (content/legal/adatkezeles.md)'}
+      data-placeholder={
+        hasPrivacy ? undefined : 'nincs adatkezelési tájékoztató (content/legal/adatkezeles.md)'
+      }
     >
       {fields.map((f) => (
         <div class="cform__field">
