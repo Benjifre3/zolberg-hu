@@ -9,18 +9,19 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/check-budgets.ts && node scripts/content-guard.ts --release",
-    "build:fixture": "astro build && node scripts/check-budgets.ts && node scripts/content-guard.ts",
+    "build:fixture": "CONTENT_DIR=tests/fixtures/content astro build && CONTENT_DIR=tests/fixtures/content node scripts/check-budgets.ts && CONTENT_DIR=tests/fixtures/content node scripts/content-guard.ts",
     "preview": "astro preview --port 4321",
     "check": "astro check",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "fonts": "node scripts/subset-fonts.ts",
     "grain": "node scripts/make-grain.ts",
-    "test:unit": "node --test \"tests/unit/**/*.test.ts\"",
-    "test:e2e": "playwright test --project=e2e --project=a11y",
+    "test:unit": "CONTENT_DIR=tests/fixtures/content node --test \"tests/unit/**/*.test.ts\"",
+    "test:e2e": "playwright test --project=e2e --project=e2e-mobile --project=a11y",
     "test:visual": "playwright test --project=visual",
     "test:lh": "node scripts/lhci.ts",
-    "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e"
+    "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e",
+    "shots:fixture": "node scripts/make-fixture-shots.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",

@@ -1,26 +1,13 @@
 ---
-/**
- * Főoldal. W0: csak az alapelrendezés és a tipográfia váza.
- * A W1-ben ide kerül a fejléc, a hero, a bizonyíték-sáv és a lábléc.
- */
+/** Főoldal. W1: hero, bizonyíték-sáv, kapcsolat (váz). W2: munkák; W3: szolgáltatás, folyamat, rólam, GYIK; W4: űrlap. */
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ProofBand from '../components/ProofBand.astro';
+import Contact from '../components/Contact.astro';
 ---
 
 <Base path="/">
-  <section class="section" aria-labelledby="hero-cim">
-    <div class="container">
-      <h1 id="hero-cim">Céges weboldal, amit a mérés igazol.</h1>
-      <p class="lead">
-        Régi vagy lassú céges weboldalak újraépítése. Először mérek, utána tervezek, és az átadáskor
-        a mérés mutatja meg az eredményt.
-      </p>
-    </div>
-  </section>
+  <Hero />
+  <ProofBand />
+  <Contact />
 </Base>
-
-<style>
-  .lead {
-    margin-block-start: var(--space-4);
-    color: var(--fg-muted);
-  }
-</style>

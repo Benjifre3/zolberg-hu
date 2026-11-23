@@ -1,0 +1,76 @@
+---
+/**
+ * Kapcsolat (6.9), tinta háttér. W1: a szekció váza (cím, válaszidő, közvetlen elérhetőség),
+ * hogy minden CTA-nak legyen célja. Az űrlap a W4-ben kerül be (a „Három mező, hírlevél
+ * nélkül.” mondat is akkor, mert addig nem igaz).
+ */
+import { site, telHref } from '../lib/site.ts';
+import { CONTACT_ID } from '../lib/nav.ts';
+
+const { email, phone } = site.company;
+const days = site.contact.response_days;
+---
+
+<section id={CONTACT_ID} class="contact on-ink section" aria-labelledby="kapcsolat-cim">
+  <div class="container contact__inner">
+    <h2 id="kapcsolat-cim">Kérem a mért adatokat.</h2>
+    {days && (
+      <p class="contact__intro">
+        {days}&nbsp;munkanapon belül rövid, forrással ellátott mérési összefoglalót küldök a saját
+        oldaláról.
+      </p>
+    )}
+    {(email || phone) && (
+      <ul class="contact__direct" role="list">
+        {email && (
+          <li>
+            <span class="mono muted">E-mail</span>
+            <a href={`mailto:${email}`}>{email}</a>
+          </li>
+        )}
+        {phone && (
+          <li>
+            <span class="mono muted">Telefon</span>
+            <a href={telHref(phone)}>{phone}</a>
+          </li>
+        )}
+      </ul>
+    )}
+  </div>
+</section>
+
+<style>
+  .contact__inner {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .contact h2 {
+    max-width: 14ch;
+  }
+
+  .contact__intro {
+    font-size: var(--step-body);
+  }
+
+  .contact__direct {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact__direct li {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .contact__direct a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+</style>

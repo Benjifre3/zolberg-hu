@@ -1,0 +1,100 @@
+---
+/**
+ * Egységes böngészőkeret (4., 5.): 3 pötty + halvány címsor, 14 px lekerekítés, kétrétegű
+ * puha árnyék. Minden munkakép ebben jelenik meg, hogy a képek ne legyenek eltérő stílusúak.
+ */
+interface Props {
+  domain: string;
+  class?: string;
+}
+const { domain, class: className } = Astro.props;
+---
+
+<div class:list={['browser', className]}>
+  <div class="browser__bar" aria-hidden="true">
+    <span class="browser__dots">
+      <i></i>
+      <i></i>
+      <i></i>
+    </span>
+    <span class="browser__url">{domain}</span>
+  </div>
+  <div class="browser__screen">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .browser {
+    overflow: hidden;
+    border: 1px solid rgb(20 19 15 / 0.1);
+    border-radius: var(--radius-card);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-card);
+  }
+
+  .browser__bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    height: 34px;
+    padding-inline: 14px;
+    border-block-end: 1px solid rgb(20 19 15 / 0.08);
+  }
+
+  .browser__bar::after {
+    content: '';
+    width: 42px; /* a pöttyök szélessége, hogy a cím középen legyen */
+  }
+
+  .browser__dots {
+    display: inline-flex;
+    gap: 6px;
+    width: 42px;
+  }
+
+  .browser__dots i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+
+  .browser__url {
+    justify-self: center;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 3px 14px;
+    border-radius: var(--radius-pill);
+    background: rgb(20 19 15 / 0.045);
+    color: var(--ink-2);
+    font-family: var(--font-mono);
+    font-size: var(--step-mono-sm);
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .browser__screen :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 520px) {
+    .browser__bar {
+      height: 26px;
+      padding-inline: 10px;
+    }
+
+    .browser__dots i {
+      width: 7px;
+      height: 7px;
+    }
+
+    .browser__url {
+      display: none;
+    }
+  }
+</style>

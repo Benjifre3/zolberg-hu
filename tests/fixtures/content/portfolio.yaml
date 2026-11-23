@@ -1,0 +1,103 @@
+# TESZTADAT – kitalált cégek, csak a tesztekhez (D-011).
+- id: teszt-gepgyar
+  name: Teszt Gépgyártó Kft.
+  live_url: https://teszt-gepgyar.example.com/
+  description: Az ajánlatkérés két kattintásra rövidült, a mobil PageSpeed 41-ről 97-re nőtt.
+  industry: Gépipar
+  type: client_project
+  approved_for_outreach: true
+  featured: true
+  year_before: 2019
+  work_type: Újraépítés
+  permission:
+    written: true
+    date: 2026-11-10
+    scope: [name, screenshots, metrics]
+  images:
+    desktop: teszt-gepgyar-1440.png
+    mobile: teszt-gepgyar-390.png
+    alt_desktop: A Teszt Gépgyártó Kft. tesztoldala asztali nézetben, ajánlatkérő gombbal.
+    alt_mobile: A Teszt Gépgyártó Kft. tesztoldala telefonon, a termékkategóriákkal.
+  metrics:
+    - key: psi_mobile
+      label: PageSpeed mobil
+      before: 41
+      after: 97
+      measured_at: 2026-11-20
+      tool: PageSpeed Insights (Lighthouse 13), mobil
+      source: measurements/teszt-gepgyar-2026-11-20.json
+    - key: lcp_mobile
+      label: LCP mobil
+      before: 6.4
+      after: 1.3
+      unit: s
+      decimals: 1
+      better: lower
+      measured_at: 2026-11-20
+      tool: PageSpeed Insights (Lighthouse 13), mobil
+      source: measurements/teszt-gepgyar-2026-11-20.json
+
+- id: teszt-pekseg
+  name: Teszt Pékség
+  live_url: https://teszt-pekseg.example.com/
+  description: Kitalált pékségnek készült terv, a rendelés mobilon három lépésből áll.
+  industry: Vendéglátás
+  type: concept_demo
+  approved_for_outreach: true
+  work_type: Koncepcióterv
+  images:
+    desktop: teszt-pekseg-1440.png
+    mobile: teszt-pekseg-390.png
+    alt_desktop: A Teszt Pékség koncepcióoldala asztali nézetben, napi kínálattal.
+    alt_mobile: A Teszt Pékség koncepcióoldala telefonon, a rendelés gombjával.
+  metrics:
+    - key: psi_mobile
+      label: PageSpeed mobil
+      after: 99
+      measured_at: 2026-11-18
+      tool: PageSpeed Insights (Lighthouse 13), mobil
+      source: measurements/teszt-pekseg-2026-11-18.json
+    - key: lcp_mobile
+      label: LCP mobil
+      after: 0.9
+      unit: s
+      decimals: 1
+      better: lower
+      measured_at: 2026-11-18
+      tool: PageSpeed Insights (Lighthouse 13), mobil
+      source: measurements/teszt-pekseg-2026-11-18.json
+
+- id: teszt-logisztika
+  name: Teszt Logisztika Zrt.
+  live_url: https://teszt-logisztika.example.com/
+  description: A szolgáltatásoldalak egy sablonra kerültek, a mobil PageSpeed 55-ről 94-re nőtt.
+  industry: Logisztika
+  type: client_project
+  approved_for_outreach: true
+  year_before: 2017
+  work_type: Újraépítés
+  permission:
+    written: true
+    date: 2026-11-12
+    scope: [name, screenshots, metrics]
+  images:
+    desktop: teszt-logisztika-1440.png
+    mobile: teszt-logisztika-390.png
+    alt_desktop: A Teszt Logisztika Zrt. tesztoldala asztali nézetben, a szolgáltatások listájával.
+    alt_mobile: A Teszt Logisztika Zrt. tesztoldala telefonon, kapcsolatfelvételi gombbal.
+  metrics:
+    - key: psi_mobile
+      label: PageSpeed mobil
+      before: 55
+      after: 94
+      measured_at: 2026-11-19
+      tool: PageSpeed Insights (Lighthouse 13), mobil
+      source: measurements/teszt-logisztika-2026-11-19.json
+
+- id: teszt-rejtett
+  name: Teszt Rejtett Bt.
+  live_url: https://teszt-rejtett.example.com/
+  description: Ez a tétel nincs jóváhagyva, ezért sehol nem jelenhet meg az oldalon.
+  industry: Építőipar
+  type: client_project
+  approved_for_outreach: false

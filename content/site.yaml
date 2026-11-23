@@ -21,3 +21,28 @@ company:
 domains:
   brand: zolberg.hu
   sender: zolbergstudio.com
+
+# Hero (6.2)
+hero:
+  status_month: null # pl. '2027. január' – csak akkor töltsd ki, ha valóban igaz
+
+# Bizonyíték-sáv (6.3, D-009): legfeljebb 3 elem; 2-nél kevesebb valós értéknél a sáv elmarad.
+# A számolt elemek a portfolio.yaml jóváhagyott munkáinak „utána” méréseiből jönnek.
+proof:
+  items:
+    - type: portfolio_mean
+      metric: psi_mobile
+      label: átlagos mobil PageSpeed a munkáimon
+    - type: portfolio_median
+      metric: lcp_mobile
+      label: medián betöltési idő (LCP) mobilon
+      decimals: 1
+    # - type: manual
+    #   value: 12
+    #   label: átadott projekt
+    #   source: saját nyilvántartás
+    #   measured_at: 2026-11-20
+
+# Kapcsolat (6.9)
+contact:
+  response_days: null # „[X] munkanapon belül …”

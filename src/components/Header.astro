@@ -1,0 +1,164 @@
+---
+/**
+ * Fejléc (6.1): sticky; szóvédjegy, horgonyok, „Beszéljünk” gomb. Mobilon csak a szóvédjegy
+ * és a gomb; hamburger-menü nincs. Görgetéskor áttetsző papír + blur(10px) (4.).
+ * Az aktív horgony kiemelése és a görgetett állapot vanilla TS (IntersectionObserver).
+ */
+import Wordmark from './Wordmark.astro';
+import Button from './Button.astro';
+import { navAnchors, anchorHref, CONTACT_ID } from '../lib/nav.ts';
+
+interface Props {
+  onHome: boolean;
+}
+const { onHome } = Astro.props;
+---
+
+<header class="site-header" data-site-header>
+  <div class="container site-header__inner">
+    <a class="site-header__brand" href="/" aria-label="Zolberg – főoldal">
+      <Wordmark />
+    </a>
+    {navAnchors.length > 0 && (
+      <nav class="site-header__nav" aria-label="Fő navigáció">
+        <ul>
+          {navAnchors.map((a) => (
+            <li>
+              <a href={anchorHref(a.id, onHome)} data-anchor={a.id}>
+                {a.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+    <Button href={anchorHref(CONTACT_ID, onHome)} class="site-header__cta">
+      Beszéljünk
+    </Button>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  if (header && 'IntersectionObserver' in window) {
+    // Görgetett állapot: egy 8 px-es őrszem a dokumentum tetején.
+    const sentinel = document.createElement('div');
+    sentinel.setAttribute('aria-hidden', 'true');
+    sentinel.style.cssText =
+      'position:absolute;top:0;left:0;width:1px;height:8px;pointer-events:none';
+    document.body.prepend(sentinel);
+    new IntersectionObserver(([entry]) => {
+      header.toggleAttribute('data-scrolled', entry ? !entry.isIntersecting : false);
+    }).observe(sentinel);
+
+    // Aktív horgony: a képernyő közepén átmenő szekció.
+    const links = [...header.querySelectorAll<HTMLAnchorElement>('a[data-anchor]')];
+    const sections = links
+      .map((l) => document.getElementById(l.dataset['anchor'] ?? ''))
+      .filter((s): s is HTMLElement => s !== null);
+    if (sections.length) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            for (const l of links) {
+              if (l.dataset['anchor'] === e.target.id) l.setAttribute('aria-current', 'true');
+              else l.removeAttribute('aria-current');
+            }
+          }
+        },
+        { rootMargin: '-45% 0px -50% 0px' },
+      );
+      sections.forEach((s) => io.observe(s));
+    }
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 50;
+    background: var(--paper);
+    border-block-end: 1px solid transparent;
+    transition:
+      background-color var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+  }
+
+  .site-header[data-scrolled] {
+    background: rgb(244 241 234 / 0.82);
+    border-block-end-color: var(--line);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    height: var(--header-h);
+  }
+
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+    font-size: 1.75rem;
+    text-decoration: none;
+  }
+
+  .site-header__nav {
+    display: none;
+    margin-inline-start: auto;
+  }
+
+  .site-header__nav ul {
+    display: flex;
+    gap: var(--space-1);
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-header__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--space-2);
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .site-header__nav a:hover,
+  .site-header__nav a[aria-current] {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+  }
+
+  .site-header :global(.site-header__cta) {
+    margin-inline-start: auto;
+  }
+
+  @media (min-width: 834px) {
+    .site-header__nav {
+      display: block;
+    }
+
+    .site-header__nav + :global(.site-header__cta) {
+      margin-inline-start: var(--space-2);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .site-header[data-scrolled] {
+      background: var(--paper);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+</style>

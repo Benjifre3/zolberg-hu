@@ -1,0 +1,50 @@
+# zolberg.hu – referenciák (a weboldal és az OutreachEngine közös forrása, master prompt 2.5, 11.)
+#
+# Az oldal CSAK az approved_for_outreach: true tételeket mutatja. A concept_demo munka mindenhol
+# „Saját koncepciómunka” címkét kap, és soha nem nevezhető ügyfélmunkának.
+# Minden szám mért, dátumozott és forrásmegjelölt: a `source` fájl a content/measurements/ alatt van.
+# Képek: content/works/ (a `pnpm shots` szkript készíti 1440×900 és 390×844 nézetből).
+#
+# Kommentált példa (a # jeleket törölve aktív lesz):
+#
+# - id: pelda-gepgyar                 # egyedi, kisbetű-kötőjel
+#   name: Példa Gépgyártó Kft.
+#   live_url: https://www.pelda-gepgyar.hu/
+#   description: Az ajánlatkérés két kattintásra rövidült, a mobil PageSpeed 42-ről 96-ra nőtt.
+#   industry: Gépipar                 # a szűrő ebből épül
+#   type: client_project              # vagy concept_demo
+#   approved_for_outreach: true
+#   featured: true                    # legfeljebb egy kiemelt munka
+#   year_before: 2019                 # a csúszka „Előtte · 2019” címkéje
+#   work_type: Újraépítés
+#   permission:                       # jóváhagyott ügyfélmunkánál kötelező
+#     written: true
+#     date: 2026-11-10
+#     scope: [name, screenshots, metrics]
+#   images:
+#     desktop: pelda-gepgyar-1440.png
+#     mobile: pelda-gepgyar-390.png
+#     before: pelda-gepgyar-elotte.png
+#     after: pelda-gepgyar-utana.png
+#     alt_desktop: A Példa Gépgyártó Kft. új nyitóoldala asztali nézetben, ajánlatkérő gombbal.
+#     alt_mobile: Ugyanez az oldal telefonon, a termékkategóriák listájával.
+#   metrics:
+#     - key: psi_mobile
+#       label: PageSpeed mobil
+#       before: 42
+#       after: 96
+#       measured_at: 2026-11-20
+#       tool: PageSpeed Insights (Lighthouse 13), mobil, 3 futás mediánja
+#       source: measurements/pelda-gepgyar-2026-11-20.json
+#     - key: lcp_mobile
+#       label: LCP mobil
+#       before: 6.8
+#       after: 1.4
+#       unit: s
+#       decimals: 1
+#       better: lower
+#       measured_at: 2026-11-20
+#       tool: PageSpeed Insights (Lighthouse 13), mobil, 3 futás mediánja
+#       source: measurements/pelda-gepgyar-2026-11-20.json
+
+[]

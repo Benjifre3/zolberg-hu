@@ -1,0 +1,120 @@
+---
+/**
+ * Kézzel rajzolt piros ceruzás aláhúzás (4. aláíró elem 1.; legfeljebb 3 az oldalon).
+ * A vonal a src/assets/marks/<név>.svg fájlból jön (tableten rajzolt vagy szkennelt, Q5).
+ * Amíg a fájl nincs meg, egy jelölt ideiglenes vonal áll a helyén; az éles build
+ * tartalom-őre a data-placeholder miatt elbukik (2.1: helyőrzővel nem élesítünk).
+ *
+ * Kirajzolódás csak transform-mal (7.): a külső doboz balról jobbra csúszik be, a belső
+ * ugyanannyival vissza, így a vonal helyben marad, és balról jobbra „előtűnik”.
+ * Nincs inline style attribútum (szigorú CSP, W5).
+ */
+interface Props {
+  name?: 'underline';
+}
+
+const { name = 'underline' } = Astro.props;
+
+const marks = import.meta.glob<string>('/src/assets/marks/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+const raw = marks[`/src/assets/marks/${name}.svg`];
+const svg = raw
+  ?.replace(/<\?xml[^>]*>/, '')
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .replace('<svg', '<svg aria-hidden="true" focusable="false" preserveAspectRatio="none"');
+---
+
+<span class="marked">
+  <slot />
+  <span class="mark" aria-hidden="true">
+    <span class="mark__clip">
+      <span class="mark__ink">
+        {svg ? (
+          <Fragment set:html={svg} />
+        ) : (
+          <svg
+            viewBox="0 0 300 24"
+            preserveAspectRatio="none"
+            focusable="false"
+            data-placeholder="ideiglenes ceruzavonal – kézzel rajzolt SVG kell (Q5)"
+          >
+            <path
+              d="M4 15c38-5 84-8 132-6.5 46 1.4 86 4.6 120 3 14-.6 27-2.4 40-4.6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="5"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+        )}
+      </span>
+    </span>
+  </span>
+</span>
+
+<style>
+  .marked {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .mark {
+    position: absolute;
+    inset-inline: -0.04em -0.06em;
+    inset-block-end: -0.1em;
+    height: 0.2em;
+    color: var(--accent-mark);
+    pointer-events: none;
+  }
+
+  .mark__clip,
+  .mark__ink {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mark__clip {
+    overflow: hidden;
+  }
+
+  .mark :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mark__clip {
+      animation: mark-wipe 900ms var(--ease-out) 450ms both;
+    }
+
+    .mark__ink {
+      animation: mark-hold 900ms var(--ease-out) 450ms both;
+    }
+  }
+
+  @keyframes mark-wipe {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes mark-hold {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+</style>

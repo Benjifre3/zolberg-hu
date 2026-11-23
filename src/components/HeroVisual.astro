@@ -1,0 +1,104 @@
+---
+/**
+ * A hero képe (5.): a kiemelt munka asztali képe böngészőkeretben, rálógó telefonkerettel.
+ * Ez a hero LCP-eleme: fetchpriority="high", eager, AVIF + WebP. Ha nincs jóváhagyott kiemelt
+ * munka, a kép elmarad (nincs helyőrző kép, 2.1).
+ */
+import { Picture } from 'astro:assets';
+import BrowserFrame from './BrowserFrame.astro';
+import PhoneFrame from './PhoneFrame.astro';
+import { featuredWork, TYPE_LABEL } from '../lib/portfolio.ts';
+import { workImage } from '../lib/images.ts';
+import { displayDomain } from '../lib/format.ts';
+
+const work = featuredWork?.images ? featuredWork : null;
+---
+
+{work?.images && (
+  <figure class="hero-visual" data-work-type={work.type} data-work-id={work.id}>
+    <div class="hero-visual__stage">
+      <BrowserFrame domain={displayDomain(work.live_url)} class="hero-visual__desktop">
+        <Picture
+          src={workImage(work.images.desktop)}
+          formats={['avif', 'webp']}
+          widths={[480, 768, 1024, 1280, 1440]}
+          sizes="(min-width: 1440px) 1126px, (min-width: 834px) calc((100vw - 96px) * 0.88), calc(100vw - 40px)"
+          quality={62}
+          alt={work.images.alt_desktop}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </BrowserFrame>
+      <PhoneFrame class="hero-visual__phone">
+        <Picture
+          src={workImage(work.images.mobile)}
+          formats={['avif', 'webp']}
+          widths={[200, 300, 390]}
+          sizes="(min-width: 1440px) 290px, (min-width: 834px) calc((100vw - 96px) * 0.23), calc((100vw - 40px) * 0.26)"
+          quality={62}
+          alt={work.images.alt_mobile}
+          loading="eager"
+          decoding="async"
+        />
+      </PhoneFrame>
+    </div>
+    <figcaption class="hero-visual__caption mono">
+      <span>{work.name}</span>
+      <span aria-hidden="true">·</span>
+      <span>{work.industry}</span>
+      <span aria-hidden="true">·</span>
+      <span class:list={['type', { 'type--concept': work.type === 'concept_demo' }]}>
+        {TYPE_LABEL[work.type]}
+      </span>
+    </figcaption>
+  </figure>
+)}
+
+<style>
+  .hero-visual {
+    margin: 0;
+  }
+
+  .hero-visual__stage {
+    position: relative;
+    padding-block-end: 12%; /* hely a lelógó telefonnak */
+  }
+
+  :global(.hero-visual__desktop) {
+    width: 100%;
+  }
+
+  :global(.hero-visual__phone) {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-end: 0;
+    width: 26%;
+  }
+
+  .hero-visual__caption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em 0.6em;
+    margin-block-start: var(--space-3);
+    color: var(--fg-muted);
+  }
+
+  .type--concept {
+    color: var(--accent);
+  }
+
+  @media (min-width: 834px) {
+    .hero-visual__stage {
+      padding-block-end: 6%;
+    }
+
+    :global(.hero-visual__desktop) {
+      width: 88%;
+    }
+
+    :global(.hero-visual__phone) {
+      width: 23%;
+    }
+  }
+</style>

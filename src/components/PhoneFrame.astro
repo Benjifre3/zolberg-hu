@@ -1,0 +1,36 @@
+---
+/** Telefonkeret a mobilnézethez (5.): tinta keret, lekerekített kijelző, ugyanaz az árnyék. */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div class:list={['phone', className]}>
+  <div class="phone__screen">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .phone {
+    padding: 6px;
+    border-radius: 26px;
+    background: var(--ink);
+    box-shadow:
+      0 1px 0 rgb(20 19 15 / 0.08),
+      0 22px 44px -20px rgb(20 19 15 / 0.45);
+  }
+
+  .phone__screen {
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--paper-raised);
+  }
+
+  .phone__screen :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

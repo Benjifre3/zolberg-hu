@@ -86,9 +86,9 @@ A `<form method="post" action="/api/contact">` natívan működik. Siker esetén
 
 A specifikáció Astro 5-öt ír, de az 5.x utolsó kiadása 2026. 05. 26-i, azóta megjelent az Astro 6 (2026. 03.) és az Astro 7 (2026. 06.). A felhasználó az Astro 7-et választotta (karbantartott főverzió). Változások, amelyek minket érintenek: Node ≥ 22.23.4; Vite 8; szigorúbb (Rust) fordító – hibás HTML-egymásba ágyazás build-hiba; a `compressHTML` alapértéke `'jsx'`, ezért **`compressHTML: true`** (a magyar szövegben a kiemelt szavak körüli szóköz nem tűnhet el); a Fonts API stabil (helyi fájl, preload, optimalizált tartalék-metrikák).
 
-### D-020 · 2026-11-23 · A Bricolage `opsz` tengelye megmarad
+### D-020 · 2026-11-23 · A Bricolage `opsz` tengelye rögzítve 72-n (mérés alapján)
 
-A specifikáció változó betűt kér `opsz` + `wght` tengellyel. Megtartva a fájl 73,6 KB, a három betű együtt 114,5 KB (keret: 120 KB). Az `opsz` rögzítése (pl. 48-on) 39,8 KB-ra csökkentené a Bricolage-ot (összesen ~81 KB). **Tartalék lépés**, ha a W1/W6-ban az LCP szűkös lesz: `opsz: 48` a `scripts/subset-fonts.ts`-ben; ez a 4. szakasztól való eltérés, ezért csak mérés alapján és naplózva.
+A specifikáció változó betűt kér `opsz` + `wght` tengellyel. A W0-ban megtartottuk (73,6 KB). A W1-ben a hero-képpel a Lighthouse mobil LCP **1935 ms** lett (határ: 1800 ms): szimulált lassú 4G-n a kép a címbetűvel osztozott a sávszélességen. Ezért az `opsz`-t 72-n rögzítettük (a legfontosabb tipográfiai pillanatok – H1, számok, óriás szóvédjegy – nagy méretűek). Eredmény: a címbetű 41,1 KB, a három betű együtt 82 KB, az LCP **1710 ms**, Performance 100. A `wght` tengely 500–700 között változó maradt. Ez eltérés a 4. szakasztól, a 9. szakasz („elsőként az effekt megy”) alapján.
 
 ### D-021 · 2026-11-23 · Eszközlánc-verziók
 
@@ -105,3 +105,23 @@ A Lighthouse CI a Playwright Chromiumát használja (`scripts/lhci.ts`), a ripor
 ### D-024 · 2026-11-23 · A nyíl ikon SVG, nem karakter
 
 A „→” (U+2192) nincs a Google Fonts-féle latin részhalmazokban, és betűnként eltérően rajzolódna. A gombok és linkek nyila saját inline SVG (egy vonalvastagság, `currentColor`), a W1-ben.
+
+### D-025 · 2026-11-23 · Nincs inline `style` attribútum
+
+A komponensek nem használnak `style=""` attribútumot (a változatokat osztály vagy `data-*` attribútum adja), hogy a W5-ös CSP `style-src-attr` nélkül, szigorúan beállítható legyen. JS-ből a CSSOM (`el.style.x`) használható, azt a CSP nem tiltja.
+
+### D-026 · 2026-11-23 · Tartalomkönyvtár és tesztadat
+
+Minden tartalom a `CONTENT_DIR` alól jön (alapból `content/`, a teszteknél `tests/fixtures/content/`): `site.yaml`, `portfolio.yaml`, `works/` (képek), `measurements/` (nyers mérések). A képeket a Vite `@content` aliasa tölti be, így éles buildbe teszt-kép nem kerülhet. A tesztképeket a `pnpm shots:fixture` készíti kitalált cégek mintaoldalairól, „TESZTADAT” felirattal. A pnpm 12 a beállításait a `pnpm-workspace.yaml`-ból olvassa (`shellEmulator: true`, hogy a `VAR=érték parancs` Windowson is fusson).
+
+### D-027 · 2026-11-23 · A bizonyíték-sáv a portfolio.yaml-ból számol
+
+A sáv számolt elemei (`portfolio_mean`, `portfolio_median`) a jóváhagyott munkák „utána” méréseiből jönnek, így a sáv és a munkakártyák nem mondhatnak ellent egymásnak. Átlag és medián csak legalább 2 mérésből; a forrás és a mérési dátumtartomány automatikusan íródik ki. Kézi elem (`manual`, pl. átadott projektek száma) csak forrással és dátummal adható meg.
+
+### D-028 · 2026-11-23 · Ideiglenes kapcsolati szekció a W1-ben
+
+Minden CTA a `#kapcsolat`-ra mutat, ezért a szekció váza (cím, válaszidő, e-mail, telefon) már a W1-ben elkészült. A „Három mező, hírlevél nélkül.” mondat és az űrlap a W4-ben jön, mert addig nem lenne igaz. A fejléc és a lábléc horgonyai csak létező szekcióra mutatnak (`src/lib/nav.ts`, `SECTIONS`).
+
+### D-029 · 2026-11-23 · Állapotváltás színnel is lehet
+
+A 7. szakasz szerint „csak transform és opacity animálódik”. Ezt a kulcskockás animációkra alkalmazzuk (H1-beúszás, ceruzajelölés, hover-nagyítás). A gombok és linkek 150–200 ms-os állapotváltása (7. szakasz 4. pont) színátmenet, ez olcsó, és a specifikáció maga sorolja az effektek közé.

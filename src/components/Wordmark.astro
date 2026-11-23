@@ -1,0 +1,30 @@
+---
+/** „zolberg.” szóvédjegy (4. aláíró elem 5.): Bricolage 700, a pont akcentszínű. */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<span class:list={['wordmark', className]}>
+  zolberg<span class="wordmark__dot">.</span>
+</span>
+
+<style>
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .wordmark__dot {
+    color: var(--accent);
+  }
+
+  :global(.on-ink) .wordmark__dot,
+  :global(.on-forest) .wordmark__dot {
+    color: var(--accent-on-dark);
+  }
+</style>

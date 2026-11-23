@@ -1,0 +1,3 @@
+# pnpm-beállítások (pnpm 10+ ezeket innen olvassa, nem a .npmrc-ből)
+shellEmulator: true
+engineStrict: true

@@ -39,7 +39,8 @@ const jobs: Job[] = [
     file: 'BricolageGrotesque[opsz,wdth,wght].ttf',
     output: 'bricolage-grotesque.woff2',
     license: 'OFL-BricolageGrotesque.txt',
-    axes: { wdth: 100, wght: { min: 500, max: 700 } }, // opsz megmarad
+    // D-020: az opsz rögzítve 72-n (mért LCP-túllépés miatt; 74 KB → ~40 KB)
+    axes: { wdth: 100, opsz: 72, wght: { min: 500, max: 700 } },
   },
   {
     file: 'HankenGrotesk[wght].ttf',

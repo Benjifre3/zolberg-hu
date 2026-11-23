@@ -1,0 +1,41 @@
+# TESZTADAT – csak a tesztekhez (D-011). Éles buildbe soha nem kerül:
+# a tartalom-őr --release módja a „Teszt Kft.” típusú neveket elutasítja.
+
+brand: zolberg
+
+meta:
+  title: 'Zolberg – céges weboldal, amit a mérés igazol'
+  description: 'Régi vagy lassú céges weboldalak újraépítése. Először mérek, utána tervezek, és az átadáskor a mérés mutatja meg az eredményt.'
+
+company:
+  legal_name: Teszt Kft.
+  owner_name: Teszt Elek
+  address: 1111 Budapest, Teszt utca 1.
+  tax_id: 12345678-1-12
+  email: teszt@example.com
+  phone: +36 1 234 5678
+
+domains:
+  brand: zolberg.hu
+  sender: zolbergstudio.com
+
+hero:
+  status_month: 2027. január
+
+proof:
+  items:
+    - type: portfolio_mean
+      metric: psi_mobile
+      label: átlagos mobil PageSpeed a munkáimon
+    - type: portfolio_median
+      metric: lcp_mobile
+      label: medián betöltési idő (LCP) mobilon
+      decimals: 1
+    - type: manual
+      value: 12
+      label: átadott projekt
+      source: Teszt nyilvántartás
+      measured_at: 2026-11-20
+
+contact:
+  response_days: 3

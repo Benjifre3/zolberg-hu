@@ -1,0 +1,177 @@
+---
+/**
+ * Hero (6.2, D-003): állapotsor → H1 (a „mérés” szón ceruzajelölés) → [alcím | gombok] →
+ * kiemelt munka böngészőkeretben. A H1 soronként beúszik, de az átlátszósága végig 1, így az
+ * LCP nem vár az animációra (PLAN 7.). Csak transform animálódik.
+ */
+import Button from './Button.astro';
+import PencilMark from './PencilMark.astro';
+import HeroVisual from './HeroVisual.astro';
+import { site } from '../lib/site.ts';
+import { hasWorks, CONTACT_ID } from '../lib/nav.ts';
+---
+
+<section class="hero" aria-labelledby="hero-cim">
+  <div class="container hero__inner">
+    {site.hero.status_month && (
+      <p class="hero__status">
+        <span class="hero__dot" aria-hidden="true" />
+        Új projektek indítása: {site.hero.status_month}
+      </p>
+    )}
+    <h1 id="hero-cim" class="hero__title">
+      <span class="hero__line">
+        <span>Céges weboldal,</span>
+      </span>{' '}
+      <span class="hero__line">
+        <span>
+          amit a <PencilMark>mérés</PencilMark> igazol.
+        </span>
+      </span>
+    </h1>
+    <div class="hero__row">
+      <p class="hero__lead">
+        Régi vagy lassú céges weboldalak újraépítése. Először mérek, utána tervezek, és az átadáskor
+        a mérés mutatja meg az eredményt.
+      </p>
+      <div class="hero__actions">
+        <Button href={`#${CONTACT_ID}`} arrow>
+          Kérem a mért adatokat
+        </Button>
+        {hasWorks && (
+          <Button href="#munkak" variant="quiet">
+            Munkák megtekintése
+          </Button>
+        )}
+      </div>
+    </div>
+    <div class="hero__visual">
+      <HeroVisual />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-block: 32px var(--section);
+  }
+
+  /* 64 px-es, 5%-os vonalrács (4.): vonalak, nem színátmenet; a széleken elhalványul. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 35%;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, rgb(20 19 15 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(20 19 15 / 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    background-position: center top;
+    mask-image: radial-gradient(ellipse 75% 85% at 50% 30%, #000 40%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .hero__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-block-end: 16px;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--paper-raised);
+    font-family: var(--font-mono);
+    font-size: var(--step-mono);
+    line-height: 1.4;
+  }
+
+  .hero__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 3px rgb(46 125 79 / 0.16);
+  }
+
+  .hero__title {
+    max-width: 16ch;
+  }
+
+  .hero__line {
+    display: block;
+  }
+
+  .hero__line > span {
+    display: inline-block;
+  }
+
+  .hero__row {
+    display: grid;
+    gap: 20px;
+    margin-block-start: 20px;
+  }
+
+  .hero__lead {
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-4);
+  }
+
+  .hero__visual {
+    margin-block-start: 36px;
+  }
+
+  @media (min-width: 834px) {
+    .hero {
+      padding-block-start: 32px;
+    }
+
+    .hero__row {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: var(--space-3);
+      align-items: end;
+      margin-block-start: 24px;
+    }
+
+    .hero__lead {
+      grid-column: 1 / span 8;
+      max-width: 66ch;
+    }
+
+    .hero__actions {
+      grid-column: 9 / -1;
+      justify-content: flex-end;
+    }
+
+    .hero__visual {
+      margin-block-start: 40px;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__line > span {
+      animation: hero-rise 640ms var(--ease-out) both;
+    }
+
+    .hero__line + .hero__line > span {
+      animation-delay: 90ms;
+    }
+  }
+
+  @keyframes hero-rise {
+    from {
+      transform: translateY(0.22em);
+    }
+    to {
+      transform: none;
+    }
+  }
+</style>

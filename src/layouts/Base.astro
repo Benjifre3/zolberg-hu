@@ -1,11 +1,13 @@
 ---
 /**
  * Alap elrendezés: head (meta, betűk, globális CSS), ugrólink, landmarkok.
- * A fejléc és a lábléc a W1-ben kerül be (Header.astro, Footer.astro).
+ * A fejléc és a lábléc minden oldalon ugyanaz (Header.astro, Footer.astro).
  */
 import { Font } from 'astro:assets';
 import '../styles/global.css';
 import { site } from '../lib/site.ts';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title?: string;
@@ -46,10 +48,10 @@ const canonical = new URL(path === '/index' ? '/' : path, Astro.site).href;
     <a class="skip-link" href="#tartalom">
       Ugrás a tartalomra
     </a>
-    <slot name="header" />
+    <Header onHome={path === '/'} />
     <main id="tartalom" tabindex="-1">
       <slot />
     </main>
-    <slot name="footer" />
+    <Footer onHome={path === '/'} />
   </body>
 </html>

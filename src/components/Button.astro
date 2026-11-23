@@ -1,0 +1,90 @@
+---
+/**
+ * Pirula-gomb (4.): min. 52 px magas, 999 px lekerekítés. A gomb mindig link (<a>),
+ * a beküldő gomb a W4-ben külön komponens. Változatok:
+ *   primary – akcent háttér, fehér szöveg (5,55:1)
+ *   secondary – körvonalas, az aktuális szövegszínnel
+ *   quiet – szöveges link nyíllal (tartalomba ültetett)
+ */
+import Arrow from './Arrow.astro';
+
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'quiet';
+  arrow?: boolean;
+  class?: string;
+}
+
+const { href, variant = 'primary', arrow = false, class: className } = Astro.props;
+---
+
+<a href={href} class:list={['btn', `btn--${variant}`, className]}>
+  <span>
+    <slot />
+  </span>
+  {arrow && <Arrow />}
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55em;
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .btn--primary,
+  .btn--secondary {
+    min-height: var(--control-h);
+    padding-inline: 1.6em;
+    border-radius: var(--radius-pill);
+  }
+
+  .btn--primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn--primary:hover {
+    background: #a52a15;
+  }
+
+  .btn--secondary {
+    border: 1.5px solid currentColor;
+    color: var(--fg);
+  }
+
+  .btn--secondary:hover {
+    background: rgb(20 19 15 / 0.06);
+  }
+
+  .btn--quiet {
+    min-height: 44px; /* érintési cél (8.) */
+    padding-block: 0.5em;
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
+  }
+
+  .btn--quiet:hover {
+    text-decoration-color: currentColor;
+  }
+
+  @media (hover: hover) {
+    .btn:hover :global(.arrow) {
+      transform: translateX(3px);
+    }
+  }
+</style>

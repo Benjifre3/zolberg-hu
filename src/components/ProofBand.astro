@@ -1,0 +1,173 @@
+---
+/**
+ * Bizonyíték-sáv (6.3): tinta háttér, legfeljebb 3 mért érték óriás számmal, mono forrással
+ * és dátummal. 2-nél kevesebb valós értéknél elmarad (D-009). A számok egyszer „felszaladnak”,
+ * amikor képernyőre érnek (7.); a HTML-ben mindig a végleges érték áll (JS nélkül és
+ * képernyőolvasóval is ez látszik/hallatszik).
+ */
+import { site } from '../lib/site.ts';
+import { approvedWorks } from '../lib/portfolio.ts';
+import { resolveProof } from '../lib/proof.ts';
+import { formatNumber, formatDateRange } from '../lib/format.ts';
+
+const items = resolveProof(site.proof.items, approvedWorks);
+---
+
+{items.length > 0 && (
+  <section class="proof on-ink" aria-labelledby="proof-cim">
+    <div class="container">
+      <h2 id="proof-cim" class="visually-hidden">
+        Mért eredmények
+      </h2>
+      <ul class="proof__list" role="list" data-cols={items.length}>
+        {items.map((item) => {
+          const shown = formatNumber(item.value, item.decimals);
+          return (
+            <li
+              class="proof__item"
+              data-metric
+              data-source={item.source}
+              data-measured-at={item.to}
+              data-countup
+              data-value={item.value.toFixed(item.decimals)}
+              data-decimals={item.decimals}
+            >
+              <p class="proof__value">
+                <span class="proof__number" aria-hidden="true" data-countup-value>
+                  {shown}
+                </span>
+                <span class="visually-hidden">{shown}</span>
+                {item.unit && <span class="proof__unit">{item.unit}</span>}
+              </p>
+              <p class="proof__label">{item.label}</p>
+              <p class="proof__source mono">
+                Forrás: {item.source} · {formatDateRange(item.from, item.to)}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+)}
+
+<script>
+  const items = document.querySelectorAll<HTMLElement>('[data-countup]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function run(item: HTMLElement) {
+    const out = item.querySelector<HTMLElement>('[data-countup-value]');
+    if (!out) return;
+    const target = Number(item.dataset['value']);
+    const decimals = Number(item.dataset['decimals'] ?? 0);
+    if (!Number.isFinite(target)) return;
+    const final = out.textContent ?? '';
+    const fmt = new Intl.NumberFormat('hu-HU', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    // A szám helye rögzített, így a mértékegység nem mozdul (CLS).
+    out.style.minWidth = `${out.getBoundingClientRect().width}px`;
+    const start = performance.now();
+    const duration = 900;
+    const step = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - (1 - p) ** 3;
+      out.textContent = p < 1 ? fmt.format(target * eased) : final;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  if (!reduce && items.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.unobserve(e.target);
+          run(e.target as HTMLElement);
+        }
+      },
+      { threshold: 0.4 },
+    );
+    items.forEach((i) => io.observe(i));
+  }
+</script>
+
+<style>
+  .proof {
+    padding-block: var(--section);
+  }
+
+  .proof__list {
+    display: grid;
+    gap: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .proof__item {
+    padding-block: var(--space-4);
+    border-block-start: 1px solid var(--rule);
+  }
+
+  .proof__item:first-child {
+    border-block-start: 0;
+    padding-block-start: 0;
+  }
+
+  .proof__value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.12em;
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 2.2rem + 5.4vw, 6.75rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .proof__number {
+    display: inline-block;
+  }
+
+  .proof__unit {
+    font-size: 0.42em;
+    letter-spacing: -0.01em;
+  }
+
+  .proof__label {
+    margin-block-start: var(--space-2);
+    font-size: var(--step-body);
+  }
+
+  .proof__source {
+    margin-block-start: var(--space-1);
+    color: var(--fg-muted);
+  }
+
+  @media (min-width: 834px) {
+    .proof__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-5);
+    }
+
+    .proof__list[data-cols='3'] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .proof__item,
+    .proof__item:first-child {
+      padding-block: 0;
+      padding-inline-start: var(--space-4);
+      border-block-start: 0;
+      border-inline-start: 1px solid var(--rule);
+    }
+
+    .proof__item:first-child {
+      padding-inline-start: 0;
+      border-inline-start: 0;
+    }
+  }
+</style>
