@@ -6,6 +6,7 @@ kikényszeríti.
 
 | Dokumentum                                             | Miről szól                                           |
 | ------------------------------------------------------ | ---------------------------------------------------- |
+| [`docs/STATUS.md`](docs/STATUS.md)                     | **hol tart a projekt, mi kell még tőled**            |
 | [`docs/MASTER_PROMPT.md`](docs/MASTER_PROMPT.md)       | a specifikáció (v2)                                  |
 | [`docs/PLAN.md`](docs/PLAN.md)                         | architektúra, mérföldkövek, kockázatok               |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md)               | minden döntés indoklással (D-001…)                   |
