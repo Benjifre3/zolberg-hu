@@ -25,7 +25,8 @@
     "shots": "node scripts/screenshot-works.ts",
     "og": "node scripts/make-og.ts",
     "links": "node scripts/check-links.ts",
-    "links:external": "node scripts/check-links.ts --external"
+    "links:external": "node scripts/check-links.ts --external",
+    "preview:fixture": "wrangler pages dev dist --port 8788 --binding EMAIL_PROVIDER=dry-run"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",
