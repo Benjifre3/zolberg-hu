@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { PAGES } from '../pages.ts';
 
 test.describe('alapok', () => {
   test('magyar nyelv, egy H1, meta-adatok a határokon belül', async ({ page }) => {
@@ -27,16 +28,43 @@ test.describe('alapok', () => {
     await expect(page.locator('main')).toBeFocused();
   });
 
-  for (const width of [320, 1920]) {
-    test(`nincs vízszintes görgetés ${width} px-en`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto('/');
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      );
-      expect(overflow).toBeLessThanOrEqual(0);
-    });
+  for (const { path, name } of PAGES) {
+    for (const width of [320, 1920]) {
+      test(`nincs vízszintes görgetés: ${name} @ ${width} px (8.)`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(path);
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(overflow).toBeLessThanOrEqual(0);
+      });
+    }
   }
+
+  test('billentyűzettel elérhető: ugrólink → logó → horgonyok → Beszéljünk', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const order: string[] = [];
+    for (let i = 0; i < 6; i++) {
+      await page.keyboard.press('Tab');
+      order.push(
+        await page.evaluate(
+          () =>
+            document.activeElement?.getAttribute('aria-label') ??
+            document.activeElement?.textContent?.trim() ??
+            '',
+        ),
+      );
+    }
+    expect(order).toEqual([
+      'Ugrás a tartalomra',
+      'Zolberg – főoldal',
+      'Munkák',
+      'Szolgáltatás',
+      'Folyamat',
+      'Beszéljünk',
+    ]);
+  });
 
   test('a 404-es oldal nem indexelhető, és visszavisz a főoldalra', async ({ page }) => {
     await page.goto('/404');

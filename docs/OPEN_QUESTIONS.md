@@ -21,7 +21,7 @@ A 3. szakasz Turnstile-t kér, a 2. szakasz 4. pontja tiltja a harmadik féltől
 - (b) Turnstile csak az űrlap első használatakor töltődik be (az oldal megnyitásakor nem). Az adatkezelési tájékoztatóban szerepel, a CSP-ben engedélyezve.
 - (c) Turnstile oldalbetöltéskor, a 3. szakasz szerint. Ez sérti a 2.4-et, nem javaslom.
 
-### Q3 · Tranzakciós e-mail szolgáltató és cél-e-mail · blokkolja: W4
+### Q3 · Tranzakciós e-mail szolgáltató és cél-e-mail · LEZÁRVA (2026-11-24): Brevo, önálló döntés a kérésedre (D-040); a cél-e-mail a `CONTACT_TO` környezeti változó
 
 Melyik szolgáltató küldje az űrlap levelét, és melyik címre?
 

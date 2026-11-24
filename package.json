@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/check-budgets.ts && node scripts/content-guard.ts --release",
-    "build:fixture": "CONTENT_DIR=tests/fixtures/content astro build && CONTENT_DIR=tests/fixtures/content node scripts/check-budgets.ts && CONTENT_DIR=tests/fixtures/content node scripts/content-guard.ts",
+    "build": "astro build && node scripts/check-budgets.ts && node scripts/content-guard.ts --release && node scripts/check-links.ts",
+    "build:fixture": "CONTENT_DIR=tests/fixtures/content astro build && CONTENT_DIR=tests/fixtures/content node scripts/check-budgets.ts && CONTENT_DIR=tests/fixtures/content node scripts/content-guard.ts && node scripts/check-links.ts",
     "preview": "astro preview --port 4321",
     "check": "astro check",
     "lint": "eslint . && prettier --check .",
@@ -23,7 +23,9 @@
     "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e",
     "shots:fixture": "node scripts/make-fixture-shots.ts",
     "shots": "node scripts/screenshot-works.ts",
-    "og": "node scripts/make-og.ts"
+    "og": "node scripts/make-og.ts",
+    "links": "node scripts/check-links.ts",
+    "links:external": "node scripts/check-links.ts --external"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",

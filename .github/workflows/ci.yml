@@ -40,7 +40,7 @@ jobs:
       - name: A betűfájlok naprakészek
         run: pnpm fonts && git diff --exit-code src/assets/fonts
 
-      - name: Build (tesztadattal) + költségvetés + tartalom-őr
+      - name: Build (tesztadattal) + költségvetés + tartalom-őr + belső linkek
         run: pnpm build:fixture
 
       - name: Playwright böngésző
@@ -84,6 +84,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Külső linkek (a valódi referenciák élő URL-jei)
+        run: pnpm links:external
 
   preview-lighthouse:
     name: Lighthouse a Pages előnézeten (LCP ≤ 1,8 s, Q8)

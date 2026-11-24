@@ -30,7 +30,7 @@ megőrzési ideig.]
 - Tárhely és a beküldött űrlap feldolgozása: [tárhelyszolgáltató – a jogi konzultáción
   ellenőrizni, hol tárolja az adatokat, és milyen garanciák vonatkoznak az EU-n kívüli
   továbbításra]
-- Az értesítő levél kézbesítése: [a választott levélküldő szolgáltató – Q3]
+- Az értesítő levél kézbesítése: Brevo (Sendinblue SAS, Franciaország) [a cégadatokat és az adatfeldolgozói szerződést a jogi konzultáción ellenőrizni]
 
 ## Sütik és mérés
 
