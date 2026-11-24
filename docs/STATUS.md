@@ -1,7 +1,7 @@
 # Állapot – 2026. 11. 24.
 
-Minden mérföldkő (R0, W0–W6) elkészült és commitolva van a helyi `main` ágon. Push nem
-történt: nincs GitHub-repó. A kód kész; **az élesítéshez már csak tőled kell tartalom és
+Minden mérföldkő (R0, W0–W6) elkészült, és fent van a privát GitHub-repóban:
+https://github.com/Benjifre3/zolberg-hu (`main`; a push minden alkalommal lefuttatja a CI-t). A kód kész; **az élesítéshez már csak tőled kell tartalom és
 fiók.** Az éles build (`pnpm build`) addig szándékosan elbukik, és pontosan felsorolja, mi
 hiányzik.
 
@@ -28,8 +28,8 @@ hiányzik.
 3. **Kézzel rajzolt ceruzavonal** (Q5): `src/assets/marks/underline.svg`.
 4. **Jogi szövegek** a jogi konzultáció után: `content/legal/` (tervezet: `docs/legal-drafts/`).
 5. **Portré és 2–3 mondatos bemutatkozás.**
-6. **Fiókok:** GitHub-repó, Cloudflare (Pages + DNS), Brevo → `docs/LAUNCH_CHECKLIST.md` B pont.
-7. A git-azonosító a commitokban a fiókod e-mail-címe – push előtt cserélhető (Q7).
+6. **Fiókok:** Cloudflare (Pages + DNS) és Brevo (a GitHub-repó már kész) → `docs/LAUNCH_CHECKLIST.md` B pont.
+7. A commitok szerzői e-mail-címe a fiókod privát (Apple-relay) címe; privát repóban csak te látod. Ha nyilvánossá tennéd a repót, előtte érdemes a GitHub `noreply` címére cserélni (Q7).
 
 ## Fontos kockázat
 
