@@ -17,6 +17,7 @@ const BUDGET = {
   fonts: 120 * KB,
   aboveFoldImages: 150 * KB,
   total: 900 * KB,
+  textures: 30 * KB, // prémium finomítás 7.: új textúra-fájlok összesen
 };
 
 function walk(dir: string): string[] {
@@ -114,6 +115,11 @@ const total =
   fileSize('/favicon.svg') +
   Buffer.byteLength(linkedCss);
 check('Teljes oldalsúly (első betöltés, tömörítetlen)', total, BUDGET.total);
+
+// Prémium finomítás: a public/tx/ textúrái összesen
+const txDir = join(DIST, 'tx');
+const txBytes = existsSync(txDir) ? walk(txDir).reduce((sum, f) => sum + statSync(f).size, 0) : 0;
+check('Textúrák összesen (tx/)', txBytes, BUDGET.textures);
 
 const width = Math.max(...rows.map((r) => r[0].length));
 for (const [label, value, limit] of rows) {

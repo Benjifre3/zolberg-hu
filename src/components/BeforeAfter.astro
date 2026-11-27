@@ -195,4 +195,10 @@ const label = `Előtte–utána összehasonlítás: ${work.name}`;
     color: var(--fg-muted);
     font-size: var(--step-mono-sm);
   }
+
+  @supports (--polish: 1) {
+    .ba__stage {
+      border-color: var(--hairline);
+    }
+  }
 </style>

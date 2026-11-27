@@ -28,7 +28,8 @@
     "links:external": "node scripts/check-links.ts --external",
     "preview:fixture": "wrangler pages dev dist --port 8788 --binding EMAIL_PROVIDER=dry-run",
     "baseline": "node scripts/baseline.ts",
-    "test:guard": "node scripts/baseline.ts && playwright test --project=guard"
+    "test:guard": "node scripts/baseline.ts && playwright test --project=guard",
+    "textures": "node scripts/make-textures.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",

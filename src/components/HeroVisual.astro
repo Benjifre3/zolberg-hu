@@ -102,4 +102,14 @@ const work = featuredWork?.images ? featuredWork : null;
       width: 23%;
     }
   }
+
+  /* A rálógó telefon mélyebb kontaktárnyéka: külön rétegnek hat (3.) */
+  @supports (--polish: 1) {
+    .hero-visual .hero-visual__phone {
+      box-shadow:
+        0 1px 1px rgb(20 19 15 / 0.22),
+        0 6px 12px -4px rgb(20 19 15 / 0.28),
+        0 30px 56px -22px rgb(20 19 15 / 0.5);
+    }
+  }
 </style>

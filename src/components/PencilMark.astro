@@ -117,4 +117,11 @@ const svg = raw
       transform: none;
     }
   }
+
+  /* Ceruza-textúra (3.): a vonal mentén változó átlátszóság; a szín marad --accent-mark */
+  @supports (--polish: 1) {
+    .mark svg {
+      mask-image: linear-gradient(90deg, #000c, #000 16%, #000b 38%, #000 58%, #000a 80%, #000e);
+    }
+  }
 </style>
