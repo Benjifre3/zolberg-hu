@@ -17,6 +17,7 @@ import {
   comparePng,
   extractStructure,
   extractStyles,
+  extractBoxes,
   COLOR_TOKENS,
 } from './helpers.ts';
 
@@ -51,6 +52,28 @@ for (const { path, name } of PAGES) {
         expect(after.runs, `${vp.width} px`).toEqual(before.runs);
       }
     });
+
+    // Elrendezés-őr TEXTÚRÁVAL: a kapu mögötti rétegek sem mozdíthatnak el semmit (pl. egy
+    // overflow: hidden a flex-elem minimális szélességét 0-ra engedné). A töréspontok mellett
+    // egy köztes szélességen is (1000 px), mert az ilyen hiba gyakran ott jön elő.
+    for (const width of [390, 834, 1000, 1440]) {
+      test(`elrendezés változatlan textúrával @ ${width}`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await open(page, OLD + path);
+        const before = await page.evaluate(extractBoxes);
+        await open(page, NEW + path);
+        const after = await page.evaluate(extractBoxes);
+        expect(after.length, 'az elemek száma').toBe(before.length);
+        const moved = after
+          .map((b, i) => [b, before[i]] as const)
+          .filter(
+            ([a, o]) =>
+              !o || a.key !== o.key || a.box.some((v, k) => Math.abs(v - (o.box[k] ?? 0)) > 1),
+          )
+          .map(([a, o]) => `${a.key}: ${o?.box.join(',')} → ${a.box.join(',')}`);
+        expect(moved, `${width} px`).toEqual([]);
+      });
+    }
 
     for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       test(`képpontra egyezik textúra nélkül @ ${vpName}`, async ({ page }, info) => {

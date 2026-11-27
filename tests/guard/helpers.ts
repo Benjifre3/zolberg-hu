@@ -192,3 +192,20 @@ export function extractStyles(tokens: readonly string[]) {
     tokens: Object.fromEntries(tokens.map((t) => [t, root.getPropertyValue(t).trim()])),
   };
 }
+
+/**
+ * Elrendezés: a v1-ben is meglévő elemtípusok dobozai (x, y, szélesség, magasság), dokumentum-
+ * koordinátában. A szavankénti és betűnkénti span-ek nincsenek benne (span nem szerepel a listában).
+ */
+export function extractBoxes() {
+  const sel =
+    'header, main > *, footer, h1, h2, h3, p, a, button, img, li, input, textarea, label, figure, details, summary, ul, ol, form';
+  return [...document.querySelectorAll(sel)].map((el) => {
+    const r = el.getBoundingClientRect();
+    const cls = (el.getAttribute('class') ?? '').split(' ')[0] ?? '';
+    return {
+      key: `${el.tagName.toLowerCase()}.${cls}`,
+      box: [r.left + scrollX, r.top + scrollY, r.width, r.height].map((v) => Math.round(v)),
+    };
+  });
+}

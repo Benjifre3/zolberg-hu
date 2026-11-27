@@ -220,6 +220,7 @@ A `motion.ts` a fejléc szkriptjével egy fájlban épül (nincs plusz kérés).
 - **Textúra-kapu:** minden 3. szakaszbeli réteg `@supports (--polish: 1)` blokkban van. A vizuális őr ezeket a CSSOM-ból törli, és csökkentett mozgásnál ≤ 0,5% eltérést enged (mért: 0,00%; textúrával ~29%, vagyis az őr érzékeny).
 - Az arculat-őr a szövegcsomópontok számított stílusát az azonos stílusú szomszédos szakaszok összevonásával veti össze: a szavankénti és betűnkénti span-ek ezért nem számítanak eltérésnek, a betűk, méretek, színek és háttérszínek viszont igen. A 11 színtoken értékét név szerint olvassa.
 - A 8790-es port egy közös előnézeti szerveré; a baseline ezért 8796-ra került.
+- **Elrendezés-őr textúrával** (2026-11-27, utólag): a kapu mögötti rétegek is elmozdíthatnak elemeket. Az elsődleges gomb `overflow: hidden`-je flex-elemként 0-ig engedte zsugorodni a gombot, és 834–1100 px között levágta a szövegét; a képpont-őr ezt nem láthatta, mert a kaput törli. Most az elemdobozokat (x, y, szélesség, magasság, ±1 px) a textúrával együtt is összevetjük 390 / 834 / **1000** / 1440 px-en. A javítás `overflow: clip` (nem görgető tároló, így a tartalom szerinti minimális szélesség marad).
 
 ### D-054 · 2026-11-27 · A mozgás értelmezései
 

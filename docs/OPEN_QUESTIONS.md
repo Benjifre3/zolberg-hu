@@ -116,3 +116,7 @@ A lábléc oszlopcímkéi és a jogi oldalak címsorai nem íródnak ki szavank�
 ### Q13 · Szimulált FCP · TÁJÉKOZTATÁS
 
 A helyi Lighthouse szimulált FCP-je 705 → 840 ms. Erre a mutatóra nincs határ; az LCP változatlan (2010 ms), a Performance 99. Az okai: +0,1 KB HTML, és az első tartalmas festés a belépő alatt később következik be. A Pages előnézeti mérés (HTTP/2, D-037) ezt pontosabban mutatja majd.
+
+### Q14 · Már a v1-ben meglévő átfedés a hero-ban (834–~1100 px) · NEM JAVÍTOTTAM (befagyasztott rács)
+
+834 és kb. 1100 px között a hero gombsora (7–12. oszlop, `nowrap`) szélesebb a hasábjánál, ezért balra kilóg, és a fő gomb takarja a bevezető bekezdés sorvégét (908 px-en a bekezdés jobb széle 512 px, a gomb bal széle 413 px). A v1-approved-ban pontosan ugyanígy van, a prémium finomítás nem változtatott rajta. A javítás a rácsot vagy a töréspontot érinti, amit ez a munka nem módosíthat (2. szakasz). Javaslat: külön ágon egy köztes töréspont (pl. 1100 px alatt a gombsor a bekezdés alá kerül), külön jóváhagyással.

@@ -15,7 +15,7 @@ betűk változatlanok (az őrtesztek minden futáskor a címkéhez hasonlítanak
 Mérés (helyi Lighthouse mobil, 5 futás mediánja): **99 / 100 / 100 / 100, LCP 2010 ms (v1: 2010),
 TBT 33 ms, CLS 0**; JS 6,6 / 15 KB gzip (a `motion.ts` ≈ 3,7 KB), CSS 25,0 / 25 KB, textúrák
 20,7 / 30 KB. Görgetés 4× CPU-lassítással: nincs 50 ms-nál hosszabb feladat. Tesztek: 61 unit,
-119 e2e / mobil / axe / őr és 1 görgetési teljesítményteszt (`pnpm test:perf`, egyedül fut).
+139 e2e / mobil / axe / őr (benne az elrendezés-őr textúrával) és 1 görgetési teljesítményteszt (`pnpm test:perf`, egyedül fut).
 
 ---
 
