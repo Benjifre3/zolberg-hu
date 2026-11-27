@@ -116,6 +116,16 @@ test.describe('mozgás – hero-belépő (5.1)', () => {
     const names = await targets(page);
     expect(names.some((n) => String(n).includes('hero-visual__desktop'))).toBe(true);
     expect(names.some((n) => String(n).includes('hero__lead'))).toBe(true);
+    // 5.1: a teljes belépő ≤ 1,6 s (a leghosszabb animáció vége a WAAPI időzítéséből)
+    const end = await page.evaluate(() =>
+      Math.max(
+        ...document
+          .getAnimations()
+          .filter((x) => !(x instanceof CSSAnimation) && !(x instanceof CSSTransition))
+          .map((x) => Number(x.effect?.getComputedTiming().endTime ?? 0)),
+      ),
+    );
+    expect(end).toBeLessThanOrEqual(1600);
     await expect(page.locator('html')).not.toHaveClass(/\bintro/);
     for (let i = 0; i < 6; i++) {
       const opacity = await page.evaluate(() => {

@@ -285,19 +285,17 @@ function intro() {
   const ws = h1 ? [...h1.querySelectorAll('[data-i="w"]:not(.mark)')] : [];
   const mark = h1?.querySelector('.mark');
 
-  // V4: H1 szavanként blurból élesre; a „mérés” után a ceruza (a v1 kirajzolása)
+  // V4: H1 szavanként blurból élesre; a „mérés” élesedése közben indul a ceruza (a v1 900 ms-os
+  // kirajzolása), így a teljes belépő ≤ 1,6 s marad (első látogatás: ~1560 ms)
   const each = full ? STAGGER.word : 40;
   const dur = full ? DUR.s : 360;
   const at = full ? 250 : 0;
   ws.forEach((w, i) => play(w, rise(RISE), { delay: at + i * each, dur, blur: true, block: true }));
-  const markAt =
-    at +
-    Math.max(
-      0,
-      ws.findIndex((w) => w.closest('.marked')),
-    ) *
-      each +
-    dur * 0.6;
+  const markWord = Math.max(
+    0,
+    ws.findIndex((w) => w.closest('.marked')),
+  );
+  const markAt = at + markWord * each + dur * 0.3;
   const pencil = {
     delay: markAt,
     dur: full ? 900 : 600 - markAt,

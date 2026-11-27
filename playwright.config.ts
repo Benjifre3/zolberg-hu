@@ -43,6 +43,8 @@ export default defineConfig({
     { name: 'visual', testMatch: /visual\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
     // Prémium finomítás: a v1-approved és az új build összevetése (tests/guard, pnpm baseline).
     { name: 'guard', testMatch: /guard\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
+    // Görgetési teljesítmény 4× CPU-lassítással: egyedül fusson (pnpm test:perf, --workers=1).
+    { name: 'perf', testMatch: /perf\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
   ],
   // A Cloudflare Pages helyi futtatókörnyezete: statikus fájlok + a /api/contact függvény.
   // A levélküldés dry-run módban fut (src/server/mailer.ts).

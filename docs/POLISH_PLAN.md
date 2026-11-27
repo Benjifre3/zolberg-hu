@@ -94,3 +94,18 @@ kezdőállapot (hero) él.
 | A `content-visibility: auto` és az IO együttműködése | alacsony              | e2e-teszt görgetéssel                                                                                                                    |
 | A Windows és a Linux képe eltér                      | biztos                | az őr mindig ugyanazon a gépen hasonlít (a baseline-t a teszt előtt építi)                                                               |
 | A CSP blokkolja az inline szkriptet                  | biztos, ha nincs hash | build utáni hash-ellenőrzés a tesztben                                                                                                   |
+
+## 6. Eredmény (2026-11-27)
+
+| Mérföldkő | Commit-üzenet eleje        | Megjegyzés                                                         |
+| --------- | -------------------------- | ------------------------------------------------------------------ |
+| P0        | `test: P0 baseline …`      | `docs/baseline/`: képek, DOM/stílus, Lighthouse (LCP 2010 ms)      |
+| P1        | `feat: P1 motion tokens …` | inline indító CSP-hash-sel, `<RevealText>`                         |
+| P2        | `feat: P2 textures …`      | textúra-kapu, CSS-minifikálás (D-041), fejléc-blur javítás (D-042) |
+| P3        | `feat: P3 hero intro …`    | kritikus/később betöltött CSS (D-043)                              |
+| P4        | `feat: P4 scroll scenes …` | IO-alapú élesítés, kényszerített elrendezés nélkül                 |
+| P5        | `feat: P5 …`               | görgetési teljesítményteszt, videó, dokumentáció                   |
+
+A tervhez képest változott: a textúra és az anyagrétegek nem inline, hanem a load után
+betöltött `deferred.css`-ben vannak (D-043). Az eltéréseket a D-041–D-047, a jóváhagyandó
+pontokat az OPEN_QUESTIONS C. része sorolja fel.

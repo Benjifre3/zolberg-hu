@@ -20,7 +20,7 @@
     "test:e2e": "playwright test --project=e2e --project=e2e-mobile --project=a11y",
     "test:visual": "playwright test --project=visual",
     "test:lh": "node scripts/lhci.ts",
-    "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e && pnpm test:guard",
+    "test": "pnpm test:unit && pnpm build:fixture && pnpm test:e2e && pnpm test:guard && pnpm test:perf",
     "shots:fixture": "node scripts/make-fixture-shots.ts",
     "shots": "node scripts/screenshot-works.ts",
     "og": "node scripts/make-og.ts",
@@ -29,7 +29,8 @@
     "preview:fixture": "wrangler pages dev dist --port 8788 --binding EMAIL_PROVIDER=dry-run",
     "baseline": "node scripts/baseline.ts",
     "test:guard": "node scripts/baseline.ts && playwright test --project=guard",
-    "textures": "node scripts/make-textures.ts"
+    "textures": "node scripts/make-textures.ts",
+    "test:perf": "playwright test --project=perf --workers=1"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",
