@@ -17,13 +17,13 @@ const { onHome } = Astro.props;
 <header class="site-header" data-site-header>
   <div class="container site-header__inner">
     <a class="site-header__brand" href="/" aria-label="Zolberg – főoldal">
-      <Wordmark />
+      <Wordmark intro />
     </a>
     {navAnchors.length > 0 && (
       <nav class="site-header__nav" aria-label="Fő navigáció">
         <ul>
           {navAnchors.map((a) => (
-            <li>
+            <li data-i>
               <a href={anchorHref(a.id, onHome)} data-anchor={a.id}>
                 {a.label}
               </a>
@@ -32,13 +32,17 @@ const { onHome } = Astro.props;
         </ul>
       </nav>
     )}
-    <Button href={anchorHref(CONTACT_ID, onHome)} class="site-header__cta">
+    <Button href={anchorHref(CONTACT_ID, onHome)} class="site-header__cta" intro>
       Beszéljünk
     </Button>
   </div>
 </header>
 
 <script>
+  // A prémium mozgás (src/scripts/motion.ts) a fejléc szkriptjével egy fájlban: a fejléc minden
+  // oldalon ott van, és így nincs plusz kérés (HTTP/1.1-en a hero-kép nem csúszik ki, D-052).
+  import '../scripts/motion.ts';
+
   const header = document.querySelector<HTMLElement>('[data-site-header]');
   if (header && 'IntersectionObserver' in window) {
     // Görgetett állapot: egy 8 px-es őrszem a dokumentum tetején.
@@ -81,9 +85,8 @@ const { onHome } = Astro.props;
     z-index: 50;
     background: var(--paper);
     border-block-end: 1px solid transparent;
-    transition:
-      background-color var(--dur-base) var(--ease-out),
-      border-color var(--dur-base) var(--ease-out);
+    transition: var(--dur-base) var(--ease-out);
+    transition-property: background-color, border-color;
   }
 
   .site-header[data-scrolled] {

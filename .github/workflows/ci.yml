@@ -24,6 +24,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # a v1-approved címke kell a baseline-hoz
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
@@ -47,6 +49,12 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       - name: e2e + akadálymentesség (axe)
         run: pnpm test:e2e
+      - name: v1-approved baseline-build (őrtesztekhez)
+        run: pnpm baseline
+      - name: Szerkezet-, arculat- és képpont-őr a v1-approved-hoz képest
+        run: pnpm exec playwright test --project=guard
+      - name: Görgetési teljesítmény (4× CPU-lassítás, egyedül)
+        run: pnpm test:perf
       - name: Vizuális regresszió (390 / 834 / 1440)
         # D-014: a hiányzó alapképeket elkészíti; ezeket az artefaktból kell commitolni.
         run: pnpm test:visual --update-snapshots=missing

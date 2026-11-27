@@ -17,6 +17,7 @@ export default defineConfig(
       '.lighthouseci/',
       '.wrangler/',
       '.lighthouseci-preview/',
+      '.baseline/',
     ],
   },
   js.configs.recommended,

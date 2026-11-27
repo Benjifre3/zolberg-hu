@@ -17,6 +17,7 @@ const BUDGET = {
   fonts: 120 * KB,
   aboveFoldImages: 150 * KB,
   total: 900 * KB,
+  textures: 30 * KB, // prémium finomítás 7.: új textúra-fájlok összesen
 };
 
 function walk(dir: string): string[] {
@@ -57,8 +58,13 @@ const linkedCss = doc
   .querySelectorAll('link[rel="stylesheet"]')
   .map((l) => readFileSync(join(DIST, l.getAttribute('href') ?? ''), 'utf8'))
   .join('\n');
-const cssBytes = Buffer.byteLength(inlineCss + linkedCss);
-check('CSS összesen', cssBytes, BUDGET.css);
+// A JS által a load után betöltött stíluslap (deferred.css, D-052) is a keretbe számít.
+const deferredCss = (existsSync(join(DIST, '_astro')) ? walk(join(DIST, '_astro')) : [])
+  .filter((f) => extname(f) === '.css')
+  .map((f) => readFileSync(f, 'utf8'))
+  .join('\n');
+const cssBytes = Buffer.byteLength(inlineCss + linkedCss + deferredCss);
+check('CSS összesen (inline + később betöltött)', cssBytes, BUDGET.css);
 
 const scripts = doc
   .querySelectorAll('script')
@@ -114,6 +120,11 @@ const total =
   fileSize('/favicon.svg') +
   Buffer.byteLength(linkedCss);
 check('Teljes oldalsúly (első betöltés, tömörítetlen)', total, BUDGET.total);
+
+// Prémium finomítás: a public/tx/ textúrái összesen
+const txDir = join(DIST, 'tx');
+const txBytes = existsSync(txDir) ? walk(txDir).reduce((sum, f) => sum + statSync(f).size, 0) : 0;
+check('Textúrák összesen (tx/)', txBytes, BUDGET.textures);
 
 const width = Math.max(...rows.map((r) => r[0].length));
 for (const [label, value, limit] of rows) {

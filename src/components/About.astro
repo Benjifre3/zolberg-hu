@@ -6,6 +6,7 @@
 import { Picture } from 'astro:assets';
 import { site } from '../lib/site.ts';
 import { aboutImage } from '../lib/images.ts';
+import RevealText from './RevealText.astro';
 
 const { owner_name: name, legal_name, tax_id, address } = site.company;
 const { bio, portrait, portrait_alt } = site.about;
@@ -29,7 +30,7 @@ const facts = [legal_name, tax_id && `Adószám: ${tax_id}`, address].filter(Boo
         />
       )}
       <div class="about__text">
-        <h2 id="rolam-cim">{name}, a Zolberg alapítója.</h2>
+        <RevealText id="rolam-cim" text={`${name}, a Zolberg alapítója.`} />
         {bio.map((p) => (
           <p>{p}</p>
         ))}

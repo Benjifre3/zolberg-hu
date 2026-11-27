@@ -118,10 +118,8 @@ const hasConcept = approvedWorks.some((w) => w.type === 'concept_demo');
     color: var(--ink);
     font-size: 1rem;
     font-weight: 500;
-    transition:
-      background-color var(--dur-fast) var(--ease-out),
-      border-color var(--dur-fast) var(--ease-out),
-      color var(--dur-fast) var(--ease-out);
+    transition: var(--dur-fast) var(--ease-out);
+    transition-property: background-color, border-color, color;
   }
 
   .pill:hover {

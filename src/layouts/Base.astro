@@ -9,6 +9,7 @@ import { site } from '../lib/site.ts';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { professionalService, jsonLdText } from '../lib/jsonld.ts';
+import { MOTION_BOOT } from '../lib/motion-boot.ts';
 
 interface Props {
   title?: string;
@@ -36,6 +37,7 @@ const isHome = path === '/';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline set:html={MOTION_BOOT} />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

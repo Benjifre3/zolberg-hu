@@ -5,6 +5,7 @@
  * Az időkeret csak akkor jelenik meg, ha a site.yaml-ban meg van adva (2.1).
  */
 import { site } from '../lib/site.ts';
+import RevealText from './RevealText.astro';
 ---
 
 <section
@@ -13,7 +14,7 @@ import { site } from '../lib/site.ts';
   aria-labelledby="folyamat-cim"
 >
   <div class="container">
-    <h2 id="folyamat-cim">Így dolgozom.</h2>
+    <RevealText id="folyamat-cim" text="Így dolgozom." />
     <ol class="process__steps" role="list">
       {site.process.steps.map((step, i) => (
         <li class="process__step">

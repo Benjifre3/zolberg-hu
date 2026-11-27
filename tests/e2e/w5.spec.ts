@@ -58,7 +58,8 @@ test('biztonsági fejlécek: CSP csak saját originnel, HSTS, nosniff', async ({
   const res = await request.get('/');
   const h = res.headers();
   expect(h['content-security-policy']).toContain("default-src 'self'");
-  expect(h['content-security-policy']).toContain("script-src 'self';");
+  // Saját origin + a mozgás-indító inline szkript hash-e, unsafe-inline nélkül (POLISH_PLAN 1.)
+  expect(h['content-security-policy']).toMatch(/script-src 'self' 'sha256-[A-Za-z0-9+/]+=*';/);
   expect(h['content-security-policy']).toContain("frame-ancestors 'none'");
   expect(h['strict-transport-security']).toContain('max-age=31536000');
   expect(h['x-content-type-options']).toBe('nosniff');

@@ -67,6 +67,18 @@
   --dur-fast: 160ms;
   --dur-base: 200ms;
 
+  /* Prémium mozgás (5.): a src/scripts/motion.ts innen olvassa, a kulcskockák JS-ben vannak */
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-xs: 180ms;
+  --dur-s: 420ms;
+  --dur-m: 700ms;
+  --dur-l: 1000ms;
+  --stagger-word: 70ms;
+  --stagger-item: 90ms;
+  --reveal-blur: 10px;
+  --reveal-y: 0.35em;
+
   color-scheme: light;
 }
 
@@ -326,4 +338,32 @@ main:focus {
   .skip-link {
     display: none;
   }
+}
+
+/* ───────────── Anyag és fény (prémium finomítás 3.) ─────────────
+ * Mind a src/styles/deferred.css-ben van (D-052): a motion.ts a load után tölti be, így az első
+ * HTML a TCP első ablakában (≈ 14 KB) marad. Ott minden réteg a `@supports (--polish: 1)` kapu
+ * mögött van: a vizuális őr ezt törli, és a maradéknak képpontra a v1-approved-nak kell lennie.
+ */
+
+/* ───────────── Hero-belépő (prémium finomítás 5.1) ─────────────
+ * Csak a festés előtti pillanatra: a src/scripts/motion.ts átveszi a kezdőállapotot
+ * (fill: both), és azonnal leveszi az .intro / .intro-short osztályt. Ha nem fut le, a fejben
+ * lévő indító szkript veszi le (DOMContentLoaded, legkésőbb 1,5 s). A hero-kép nem lesz
+ * átlátszó (LCP-elem marad), csak elmosott.
+ */
+.motion .hero__line > span,
+.motion .mark__clip,
+.motion .mark__ink {
+  animation: none;
+}
+
+.intro [data-i],
+.intro-short [data-i='w'] {
+  opacity: 0;
+}
+
+.intro .hero-visual__desktop {
+  filter: blur(16px);
+  transform: scale(1.06);
 }

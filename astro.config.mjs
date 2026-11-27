@@ -2,6 +2,8 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { minifyCssVars } from './scripts/lib/minify-css-vars.ts';
 
 const SITE_URL = process.env.SITE_URL ?? 'https://zolberg.hu';
 /** Tartalomkönyvtár: éles build content/, tesztek tests/fixtures/content (D-011). */
@@ -31,6 +33,16 @@ export default defineConfig({
     },
   },
   integrations: [
+    // D-050: a csak CSS-ben élő custom property nevek rövidítése a kész HTML-ben (CSS-keret 9.)
+    {
+      name: 'zolberg:minify-css-vars',
+      hooks: {
+        'astro:build:done': ({ dir, logger }) => {
+          const { renamed, saved } = minifyCssVars(fileURLToPath(dir));
+          logger.info(`${renamed} custom property rövidítve, ${saved} bájt/oldalak összesen`);
+        },
+      },
+    },
     sitemap({
       filter: (page) => !NOT_IN_SITEMAP.some((p) => new URL(page).pathname.startsWith(p)),
     }),

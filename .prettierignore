@@ -11,3 +11,4 @@ tests/visual/__screenshots__/
 .wrangler/
 .lighthouseci-preview/
 docs/legal-drafts/
+.baseline/

@@ -1,0 +1,21 @@
+{
+  "measured_at": "2026-11-27T16:15:19.048Z",
+  "dist": "dist",
+  "runs": 5,
+  "setup": "Lighthouse CI, mobil, szimulált lassú 4G, helyi statikus szerver (HTTP/1.1)",
+  "scores": {
+    "performance": 99,
+    "accessibility": 100,
+    "best_practices": 100,
+    "seo": 100
+  },
+  "metrics_ms": {
+    "fcp": 840,
+    "lcp": 2010,
+    "tbt": 33,
+    "speed_index": 1506
+  },
+  "cls": 0,
+  "total_bytes": 190490,
+  "lcp_element": "<img src=\"http://localhost:62886/_astro/teszt-gepgyar-1440.Dx5WE6kA_ZfOv74.avif\" srcset=\"/_astro/teszt-gepgyar-1440.Dx5WE6kA_Z2fAiB2.png 480w, /_astro/teszt-gepgya…\" sizes=\"(min-width: 1440px) 1126px,"
+}

@@ -19,3 +19,6 @@ tests/visual/__screenshots__/*-win32.png
 # A wrangler helyi állapota
 .wrangler/
 .lighthouseci-preview/
+
+# A v1-approved baseline-build az őrtesztekhez (scripts/baseline.ts)
+.baseline/

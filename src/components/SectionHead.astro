@@ -4,6 +4,7 @@
  * vagy bevezető bekezdés a 7–12. oszlopban (Ramotion-elv). 834 px alatt egymás alatt.
  */
 import Button from './Button.astro';
+import RevealText from './RevealText.astro';
 
 interface Props {
   id: string;
@@ -15,7 +16,7 @@ const hasIntro = Astro.slots.has('default');
 ---
 
 <div class:list={['section-head', { 'section-head--intro': hasIntro }]}>
-  <h2 id={id}>{title}</h2>
+  <RevealText id={id} text={title} />
   {link && (
     <Button href={link.href} variant="quiet" arrow class="section-head__link">
       {link.label}

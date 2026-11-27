@@ -30,7 +30,7 @@ const work = featuredWork?.images ? featuredWork : null;
           decoding="async"
         />
       </BrowserFrame>
-      <PhoneFrame class="hero-visual__phone">
+      <PhoneFrame class="hero-visual__phone" intro>
         <Picture
           src={workImage(work.images.mobile)}
           formats={['avif', 'webp']}
@@ -44,7 +44,7 @@ const work = featuredWork?.images ? featuredWork : null;
         />
       </PhoneFrame>
     </div>
-    <figcaption class="hero-visual__caption mono">
+    <figcaption class="hero-visual__caption mono" data-i>
       <span>{work.name}</span>
       <span aria-hidden="true">·</span>
       <span>{work.industry}</span>

@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 8788;
+const BASELINE_PORT = 8796;
 const CI = !!process.env['CI'];
 
 /** Töréspontok (master prompt 8.) */
@@ -40,14 +41,27 @@ export default defineConfig({
     },
     { name: 'a11y', testMatch: /a11y\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
     { name: 'visual', testMatch: /visual\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
+    // Prémium finomítás: a v1-approved és az új build összevetése (tests/guard, pnpm baseline).
+    { name: 'guard', testMatch: /guard\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
+    // Görgetési teljesítmény 4× CPU-lassítással: egyedül fusson (pnpm test:perf, --workers=1).
+    { name: 'perf', testMatch: /perf\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
   ],
   // A Cloudflare Pages helyi futtatókörnyezete: statikus fájlok + a /api/contact függvény.
   // A levélküldés dry-run módban fut (src/server/mailer.ts).
-  webServer: {
-    command: `pnpm exec wrangler pages dev dist --port ${PORT} --binding EMAIL_PROVIDER=dry-run`,
-    env: { WRANGLER_SEND_METRICS: 'false' },
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: !CI,
-    timeout: 60_000,
-  },
+  webServer: [
+    {
+      command: `pnpm exec wrangler pages dev dist --port ${PORT} --binding EMAIL_PROVIDER=dry-run`,
+      env: { WRANGLER_SEND_METRICS: 'false' },
+      url: `http://localhost:${PORT}`,
+      reuseExistingServer: !CI,
+      timeout: 60_000,
+    },
+    // A v1-approved baseline-build (scripts/baseline.ts). Hiányában 503-at ad, csak az őr bukik.
+    {
+      command: `node scripts/serve-static.ts .baseline/dist ${BASELINE_PORT}`,
+      url: `http://localhost:${BASELINE_PORT}/__health`,
+      reuseExistingServer: !CI,
+      timeout: 30_000,
+    },
+  ],
 });

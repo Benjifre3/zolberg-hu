@@ -2,11 +2,13 @@
 /** Telefonkeret a mobilnézethez (5.): tinta keret, lekerekített kijelző, ugyanaz az árnyék. */
 interface Props {
   class?: string;
+  /** a hero-belépő eleme (prémium finomítás 5.1) */
+  intro?: boolean;
 }
-const { class: className } = Astro.props;
+const { class: className, intro } = Astro.props;
 ---
 
-<div class:list={['phone', className]}>
+<div class:list={['phone', className]} data-i={intro ? '' : undefined}>
   <div class="phone__screen">
     <slot />
   </div>
