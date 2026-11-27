@@ -82,6 +82,12 @@ function* shortNames(): Generator<string> {
 export function minifyCssVars(dist: string): { renamed: number; saved: number } {
   const files = walk(dist);
   const html = files.filter((f) => extname(f) === '.html');
+  /** a JS által később betöltött stíluslapok (deferred.css, D-043) */
+  const sheets = files.filter((f) => extname(f) === '.css');
+  const cssOf = (f: string): string[] =>
+    extname(f) === '.css'
+      ? [readFileSync(f, 'utf8')]
+      : [...readFileSync(f, 'utf8').matchAll(STYLE)].map((m) => m[2] ?? '');
   const external = files
     .filter((f) => ['.js', '.mjs'].includes(extname(f)))
     .map((f) => readFileSync(f, 'utf8'))
@@ -95,17 +101,17 @@ export function minifyCssVars(dist: string): { renamed: number; saved: number } 
     const src = readFileSync(f, 'utf8');
     for (const s of src.matchAll(/style="([^"]*)"/g))
       for (const m of (s[1] ?? '').matchAll(/--[a-zA-Z][\w-]*/g)) outside.add(m[0]);
-    for (const [, , css = ''] of src.matchAll(STYLE))
-      for (const m of css.matchAll(PROP)) if (m[2]) names.add(m[2]);
   }
+  for (const f of [...html, ...sheets])
+    for (const css of cssOf(f)) for (const m of css.matchAll(PROP)) if (m[2]) names.add(m[2]);
   const blocked = new Set<string>([...KEEP, ...outside]);
 
   // A színtokenek egyszer, literális színnel definiáltak, és soha nem íródnak felül (a kontextusok
   // csak a szerep-változókat cserélik): a `var(--paper)` hivatkozás így a saját értékére
   // cserélhető. A definíció név szerint megmarad (arculat-őr, kontraszt-teszt).
   const values = new Map<string, Set<string>>();
-  for (const f of html)
-    for (const [, , css = ''] of readFileSync(f, 'utf8').matchAll(STYLE))
+  for (const f of [...html, ...sheets])
+    for (const css of cssOf(f))
       for (const [, n = '', v = ''] of css.matchAll(/[{;](--[\w-]+):([^;}]*)/g)) {
         if (!values.has(n)) values.set(n, new Set());
         values.get(n)?.add(v.trim());
@@ -127,19 +133,22 @@ export function minifyCssVars(dist: string): { renamed: number; saved: number } 
     map.set(n, s);
   }
 
+  const minify = (css: string) =>
+    inlineVar(css)
+      .replace(PROP, (_all, pre: string, n: string) => pre + (map.get(n) ?? n))
+      // a custom propertyt tartalmazó értékekben a minifier meghagyja a „, ” szóközét
+      .replace(/("[^"]*"|'[^']*')|, /g, (_m, quoted?: string) => quoted ?? ',');
+
   let saved = 0;
-  for (const f of html) {
+  for (const f of [...html, ...sheets]) {
     const src = readFileSync(f, 'utf8');
-    const out = src.replace(
-      STYLE,
-      (_, open: string, css: string, close: string) =>
-        open +
-        inlineVar(css)
-          .replace(PROP, (_all, pre: string, n: string) => pre + (map.get(n) ?? n))
-          // a custom propertyt tartalmazó értékekben a minifier meghagyja a „, ” szóközét
-          .replace(/("[^"]*"|'[^']*')|, /g, (_m, quoted?: string) => quoted ?? ',') +
-        close,
-    );
+    const out =
+      extname(f) === '.css'
+        ? minify(src)
+        : src.replace(
+            STYLE,
+            (_, open: string, css: string, close: string) => open + minify(css) + close,
+          );
     saved += src.length - out.length;
     if (out !== src) writeFileSync(f, out);
   }

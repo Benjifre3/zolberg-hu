@@ -1,14 +1,23 @@
 ---
-/** „zolberg.” szóvédjegy (4. aláíró elem 5.): Bricolage 700, a pont akcentszínű. */
+/**
+ * „zolberg.” szóvédjegy (4. aláíró elem 5.): Bricolage 700, a pont akcentszínű.
+ * A betűk külön inline span-ek (a mozgáshoz, prémium finomítás 5.1 és 5.2); nyugalomban a
+ * szövegformázás és az aláfutás azonos az egybefüggő szöveggel.
+ */
 interface Props {
   class?: string;
+  /** a hero-belépő része (a fejlécben) */
+  intro?: boolean;
 }
-const { class: className } = Astro.props;
+const { class: className, intro } = Astro.props;
+const i = intro ? ' data-i' : '';
+// Egy sorban, szóköz nélkül (a formázó nem tördelheti szét: „zolberg .” lenne belőle).
+const html =
+  [...'zolberg'].map((l) => `<span${i}>${l}</span>`).join('') +
+  `<span class="wordmark__dot"${i}>.</span>`;
 ---
 
-<span class:list={['wordmark', className]}>
-  zolberg<span class="wordmark__dot">.</span>
-</span>
+<span class:list={['wordmark', className]} aria-hidden="true" set:html={html} />
 
 <style is:global>
   .wordmark {

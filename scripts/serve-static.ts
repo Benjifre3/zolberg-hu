@@ -9,7 +9,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { join, extname, resolve, normalize } from 'node:path';
 
 const root = resolve(process.argv[2] ?? 'dist');
-const port = Number(process.argv[3] ?? 8790);
+const port = Number(process.argv[3] ?? 8796);
 
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',

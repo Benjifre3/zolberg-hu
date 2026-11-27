@@ -30,7 +30,7 @@ const work = featuredWork?.images ? featuredWork : null;
           decoding="async"
         />
       </BrowserFrame>
-      <PhoneFrame class="hero-visual__phone">
+      <PhoneFrame class="hero-visual__phone" intro>
         <Picture
           src={workImage(work.images.mobile)}
           formats={['avif', 'webp']}
@@ -44,7 +44,7 @@ const work = featuredWork?.images ? featuredWork : null;
         />
       </PhoneFrame>
     </div>
-    <figcaption class="hero-visual__caption mono">
+    <figcaption class="hero-visual__caption mono" data-i>
       <span>{work.name}</span>
       <span aria-hidden="true">·</span>
       <span>{work.industry}</span>
@@ -100,16 +100,6 @@ const work = featuredWork?.images ? featuredWork : null;
 
     .hero-visual__phone {
       width: 23%;
-    }
-  }
-
-  /* A rálógó telefon mélyebb kontaktárnyéka: külön rétegnek hat (3.) */
-  @supports (--polish: 1) {
-    .hero-visual .hero-visual__phone {
-      box-shadow:
-        0 1px 1px rgb(20 19 15 / 0.22),
-        0 6px 12px -4px rgb(20 19 15 / 0.28),
-        0 30px 56px -22px rgb(20 19 15 / 0.5);
     }
   }
 </style>

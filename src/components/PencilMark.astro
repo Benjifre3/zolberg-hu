@@ -29,7 +29,7 @@ const svg = raw
 
 <span class="marked">
   <slot />
-  <span class="mark" aria-hidden="true">
+  <span class="mark" aria-hidden="true" data-i="w">
     <span class="mark__clip">
       <span class="mark__ink">
         {svg ? (
@@ -115,13 +115,6 @@ const svg = raw
     }
     to {
       transform: none;
-    }
-  }
-
-  /* Ceruza-textúra (3.): a vonal mentén változó átlátszóság; a szín marad --accent-mark */
-  @supports (--polish: 1) {
-    .mark svg {
-      mask-image: linear-gradient(90deg, #000c, #000 16%, #000b 38%, #000 58%, #000a 80%, #000e);
     }
   }
 </style>

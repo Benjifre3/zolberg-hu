@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 8788;
-const BASELINE_PORT = 8790;
+const BASELINE_PORT = 8796;
 const CI = !!process.env['CI'];
 
 /** Töréspontok (master prompt 8.) */

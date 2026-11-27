@@ -97,32 +97,4 @@ const { domain, class: className } = Astro.props;
       display: none;
     }
   }
-
-  /* Prémium anyag (3.): hajszálvonal-keret, felülről világosodó sáv, belső szegély, vinyetta */
-  @supports (--polish: 1) {
-    .browser {
-      border-color: var(--hairline);
-    }
-
-    .browser__bar {
-      background: linear-gradient(
-        color-mix(in srgb, var(--paper-raised), var(--paper) 70%),
-        var(--paper-raised)
-      );
-    }
-
-    .browser__screen {
-      position: relative;
-    }
-
-    .browser__screen::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      box-shadow:
-        inset 0 0 0 1px rgb(20 19 15 / 0.06),
-        inset 0 0 48px rgb(20 19 15 / 0.04);
-      pointer-events: none;
-    }
-  }
 </style>

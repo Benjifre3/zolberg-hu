@@ -9,6 +9,8 @@
  * - Blur legfeljebb 12 elemen egyszerre; gyenge eszközön (≤ 4 mag vagy saveData) nincs blur.
  */
 
+import deferredCss from '../styles/deferred.css?url';
+
 type From = Keyframe & { filter?: string };
 interface Opts {
   delay?: number;
@@ -21,12 +23,43 @@ interface Opts {
   pseudo?: string;
   /** inline-block az animáció idejére (inline szó- és betű-span-ek transformjához) */
   block?: boolean;
+  /** teljes kulcskocka-sor (a from/to helyett) */
+  frames?: Keyframe[];
 }
 type Step = [el: Element | null | undefined, from: From, opts?: Opts];
 
 const root = document.documentElement;
 const cl = root.classList;
 cl.add('m-ok');
+
+// A nem kritikus prémium-stílusok (textúra, hajtás alatti anyagok, interakciók) az első tartalmas
+// festés (FCP) és a load után (D-043), mozgástól függetlenül: így nem versenyeznek a hero-képpel,
+// és a lassú hálózat sem csúszik ki az első TCP-ablakból. Betöltve a <html> `tx` osztályt kap.
+let txDone = false;
+const tx = () => {
+  if (txDone) return;
+  txDone = true;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = deferredCss;
+  link.onload = () => cl.add('tx');
+  document.head.append(link);
+};
+const afterLoad = () =>
+  document.readyState === 'complete' ? tx() : addEventListener('load', tx, { once: true });
+const loadDeferred = () => {
+  setTimeout(tx, 3000); // tartalék, ha nincs paint timing
+  if (performance.getEntriesByName('first-contentful-paint').length) return afterLoad();
+  try {
+    new PerformanceObserver((list, obs) => {
+      if (!list.getEntriesByName('first-contentful-paint').length) return;
+      obs.disconnect();
+      afterLoad();
+    }).observe({ type: 'paint', buffered: true });
+  } catch {
+    afterLoad();
+  }
+};
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const css = getComputedStyle(root);
@@ -87,7 +120,7 @@ export function play(el: Element | null | undefined, from: From, o: Opts = {}): 
     t[k] = k === 'opacity' ? 1 : k === 'filter' ? 'none' : k === 'clipPath' ? 'inset(0)' : 'none';
   }
   if (o.block) h.style.display = 'inline-block';
-  const a = el.animate([f, t], {
+  const a = el.animate(o.frames ?? [f, t], {
     duration: dur,
     delay,
     easing: o.ease ?? EASE,
@@ -100,9 +133,15 @@ export function play(el: Element | null | undefined, from: From, o: Opts = {}): 
     a.cancel();
     live.delete(a);
     if (o.block) h.style.removeProperty('display');
+    tidy(h);
   };
   a.finished.then(done, done);
   return a;
+}
+
+/** Üres style-attribútum nem marad az elemen. */
+function tidy(h: HTMLElement) {
+  if (!h.style.length) h.removeAttribute('style');
 }
 
 /** Kezdőállapot a festés előtt (csak a képernyő alatti elemeken). */
@@ -131,6 +170,7 @@ function unhide(el: Element) {
   for (const k of keys.split(' '))
     h.style.removeProperty(k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`));
   delete h.dataset['mHidden'];
+  tidy(h);
 }
 
 /** Lépcsőzött lépések szavakra/elemekre. */
@@ -160,7 +200,15 @@ interface Group {
   run?: () => void;
 }
 const groups: Group[] = [];
-const fold = () => innerHeight;
+/**
+ * A szekciók helye egyetlen méréssel, minden írás előtt (különben minden hide() után új
+ * elrendezést kényszerítene ki: ez a Lighthouse-ban 100 ms-os long task volt).
+ */
+const tops = new Map<Element, number>();
+const measure = () => {
+  for (const s of document.querySelectorAll('main > *, body > footer'))
+    tops.set(s, s.getBoundingClientRect().top);
+};
 
 /**
  * Egy csoport: amikor a `trigger` ≥ 20%-ban (vagy a képernyő 20%-ában) látszik, a lépések
@@ -169,7 +217,7 @@ const fold = () => innerHeight;
 export function onView(trigger: Element | null | undefined, steps: Step[], run?: () => void) {
   if (!trigger || reduce) return;
   const section = trigger.closest('main > *, body > footer') ?? trigger;
-  if (section.getBoundingClientRect().top < fold()) return;
+  if ((tops.get(section) ?? 0) < innerHeight) return;
   for (const [el, from, o] of steps) hide(el, from, o);
   const g: Group = { trigger, steps };
   if (run) g.run = run;
@@ -210,7 +258,141 @@ addEventListener('beforeprint', () => {
 
 export const motionOn = !reduce && 'animate' in root;
 
-// ───────── Szekciócímek (V7) ─────────
-if (motionOn) {
-  for (const h of document.querySelectorAll('main h2[data-reveal]')) onView(h, words(h));
+const $ = (s: string) => document.querySelector(s);
+const $$ = (s: string) => [...document.querySelectorAll(s)];
+const rise = (y: string): From => ({ opacity: 0, transform: `translateY(${y})` });
+const run = (steps: Step[]) => steps.forEach(([el, f, o]) => play(el, f, o));
+
+// ───────── Hero-belépő (5.1) ─────────
+/**
+ * Első látogatás (.intro, ≤ 1,6 s): V1 a hero-keret élesre áll, V2 a pont középről a helyére,
+ * a betűk lépcsőzve élesednek, V3 fejléc, V4 H1 szavanként + ceruza, V5 alcím és gombok,
+ * V6 állapotsor és telefon. Visszatérő látogató (.intro-short): csak a H1 és a ceruza, 600 ms.
+ * Ha az oldal horgonnyal vagy görgetve nyílik, nincs belépő.
+ */
+function intro() {
+  const full = cl.contains('intro');
+  if (!full && !cl.contains('intro-short')) return;
+  if (location.hash || scrollY > 0) return;
+  // olvasás minden írás előtt (egyetlen elrendezés)
+  const dot = full ? $('.site-header .wordmark__dot') : null;
+  const r = dot?.getBoundingClientRect();
+  const h1 = $('.hero__title');
+  const ws = h1 ? [...h1.querySelectorAll('[data-i="w"]:not(.mark)')] : [];
+  const mark = h1?.querySelector('.mark');
+
+  // V4: H1 szavanként blurból élesre; a „mérés” után a ceruza (a v1 kirajzolása)
+  const each = full ? STAGGER.word : 40;
+  const dur = full ? DUR.s : 360;
+  const at = full ? 250 : 0;
+  ws.forEach((w, i) => play(w, rise(RISE), { delay: at + i * each, dur, blur: true, block: true }));
+  const markAt =
+    at +
+    Math.max(
+      0,
+      ws.findIndex((w) => w.closest('.marked')),
+    ) *
+      each +
+    dur * 0.6;
+  const pencil = {
+    delay: markAt,
+    dur: full ? 900 : 600 - markAt,
+    ease: 'cubic-bezier(.2,.7,.2,1)',
+  };
+  play(mark?.querySelector('.mark__clip'), { transform: 'translateX(-100%)' }, pencil);
+  play(mark?.querySelector('.mark__ink'), { transform: 'translateX(100%)' }, pencil);
+  if (mark) unhide(mark);
+  if (!full) return;
+
+  // V1: a hero-keret „kamera-fókusza” (opacity nélkül: LCP-elem marad)
+  play($('.hero-visual__desktop'), { transform: 'scale(1.06)' }, { dur: 600, blur: '16px' });
+
+  // V2: a pont a képernyő közepéről, kicsiből nő a helyére, lágy pulzussal; utána a betűk
+  if (dot && r) {
+    const dx = innerWidth / 2 - r.left - r.width / 2;
+    const dy = innerHeight / 2 - r.top - r.height / 2;
+    play(
+      dot,
+      {},
+      {
+        dur: DUR.m,
+        block: true,
+        // szakaszonkénti görbe: az út a 72%-ig lágyan fékez, utána a pulzus
+        ease: 'linear',
+        frames: [
+          { opacity: 0, transform: `translate(${dx}px,${dy}px) scale(.3)`, easing: SOFT },
+          { opacity: 1, offset: 0.2 },
+          { transform: 'none', offset: 0.72, easing: SOFT },
+          { transform: 'scale(1.14)', offset: 0.86, easing: SOFT },
+          { opacity: 1, transform: 'none' },
+        ],
+      },
+    );
+  }
+  // a betűk inline maradnak (opacity és filter inline elemen is működik): a link látható
+  // szövege végig „zolberg.” marad (axe: label-content-name-mismatch)
+  run(
+    stagger(
+      $$('.site-header .wordmark > [data-i]:not(.wordmark__dot)'),
+      { opacity: 0 },
+      {
+        delay: 200,
+        each: 25,
+        dur: 300,
+        blur: '6px',
+      },
+    ),
+  );
+
+  // V3: navigáció és gomb
+  run(
+    stagger($$('.site-header :is(li, .btn)[data-i]'), rise('-8px'), {
+      delay: 150,
+      each: 40,
+      dur: 300,
+    }),
+  );
+
+  // V5: alcím, fő gomb (0,96 → 1), másodlagos link
+  play($('.hero__lead'), rise('8px'), { delay: 700, dur: 300 });
+  $$('.hero__actions [data-i]').forEach((b, i) =>
+    play(
+      b,
+      { opacity: 0, transform: `translateY(8px) scale(${i ? 1 : 0.96})` },
+      { delay: 800 + i * 80, dur: 300 },
+    ),
+  );
+
+  // V6: állapotsor; a rálógó telefon 24 px-ről, az asztali keret után (rétegzés); képaláírás
+  play($('.hero__status'), rise('6px'), { delay: 900, dur: 300 });
+  play($('.hero-visual__phone'), rise('24px'), { delay: 1000, dur: DUR.s });
+  play($('.hero-visual__caption'), rise('6px'), { delay: 1100, dur: 300 });
 }
+
+// ───────── Görgetésre induló jelenetek (5.2) ─────────
+/**
+ * Az első képkocka után, külön feladatban (D-043): a hajtás alatti elemek a festéskor úgysem
+ * látszanak, így az LCP-kép festését és a TBT-t nem terheli a beállításuk.
+ */
+function scenes() {
+  measure();
+  // V7: szekciócímek szavanként
+  for (const h of $$('main h2[data-reveal]')) onView(h, words(h));
+}
+/**
+ * Indítás az első képkocka után (D-043): a modul-szkript a Chrome-ban az első festés előtt fut,
+ * így minden itt végzett munka az LCP-t tolná. A festéskor a CSS-kezdőállapot (.intro: átlátszó,
+ * illetve elmosott keret) már ugyanaz, mint az animációk kezdőkockája, ezért az átvétel
+ * észrevétlen. A rAF háttérlapon nem fut: a setTimeout a tartalék.
+ */
+let started = false;
+const start = () => {
+  if (started) return;
+  started = true;
+  if (motionOn) intro();
+  cl.remove('intro', 'intro-short');
+  if (motionOn) setTimeout(scenes);
+  loadDeferred();
+};
+requestAnimationFrame(() => setTimeout(start));
+setTimeout(start, 200);

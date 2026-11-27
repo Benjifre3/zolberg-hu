@@ -93,3 +93,60 @@ test.describe('mozgás – indítás és kapuk', () => {
     for (const s of await spans.all()) await expect(s).toHaveCSS('opacity', '1');
   });
 });
+
+test.describe('mozgás – hero-belépő (5.1)', () => {
+  /** A futó (nem CSS-) animációk célpontjai a betöltés pillanatában. */
+  const targets = (page: Page) =>
+    page.evaluate(() =>
+      document
+        .getAnimations()
+        .filter((a) => !(a instanceof CSSAnimation))
+        .map((a) => {
+          const t = (a.effect as KeyframeEffect | null)?.target;
+          return t ? t.className || t.tagName : '';
+        }),
+    );
+
+  test('első látogatás: teljes belépő; a hero-kép végig átlátszatlan (LCP)', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'commit' });
+    await page.waitForFunction(() => document.documentElement.classList.contains('m-ok'));
+    const names = await targets(page);
+    expect(names.some((n) => String(n).includes('hero-visual__desktop'))).toBe(true);
+    expect(names.some((n) => String(n).includes('hero__lead'))).toBe(true);
+    await expect(page.locator('html')).not.toHaveClass(/\bintro/);
+    for (let i = 0; i < 6; i++) {
+      const opacity = await page.evaluate(() => {
+        let o = 1;
+        for (
+          let el = document.querySelector('.hero-visual__desktop img');
+          el;
+          el = el.parentElement
+        )
+          o *= Number(getComputedStyle(el).opacity);
+        return o;
+      });
+      expect(opacity).toBe(1);
+      await page.waitForTimeout(150);
+    }
+    await page.waitForFunction(() =>
+      document
+        .getAnimations()
+        .every((a) => a instanceof CSSAnimation || a.playState === 'finished'),
+    );
+    const leftovers = await page.evaluate(
+      () => [...document.querySelectorAll('[data-i][style], h1 [style]')].length,
+    );
+    expect(leftovers).toBe(0);
+  });
+
+  test('visszatérő látogató: csak a H1 és a ceruza animálódik', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => sessionStorage.getItem('zb-intro') === '1');
+    await page.reload({ waitUntil: 'commit' });
+    await page.waitForFunction(() => document.documentElement.classList.contains('m-ok'));
+    const names = (await targets(page)).map(String);
+    expect(names.length).toBeGreaterThan(0);
+    expect(names.some((n) => n.includes('hero__lead') || n.includes('hero-visual'))).toBe(false);
+    expect(names.every((n) => n === 'SPAN' || n === '' || /mark__/.test(n))).toBe(true);
+  });
+});

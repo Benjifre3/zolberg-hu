@@ -1,12 +1,12 @@
 /**
- * Őrtesztek közös része (POLISH_PLAN 1.): a v1-approved build (8790) és az új build (8788)
+ * Őrtesztek közös része (POLISH_PLAN 1.): a v1-approved build (8796) és az új build (8788)
  * ugyanazon a gépen, ugyanazzal a böngészővel kerül összehasonlításra.
  */
 import type { Page } from '@playwright/test';
 import sharp from 'sharp';
 
 export const NEW = 'http://localhost:8788';
-export const OLD = 'http://localhost:8790';
+export const OLD = 'http://localhost:8796';
 
 export interface OpenOptions {
   /** false: a `@supports (--polish: 1)` textúra-blokkok törlése a CSSOM-ból */
@@ -19,6 +19,9 @@ export async function open(page: Page, url: string, opts: OpenOptions = {}): Pro
   const { polish = true, reducedMotion = 'reduce' } = opts;
   await page.emulateMedia({ reducedMotion });
   await page.goto(url);
+  // Az új build végleges kinézete a később betöltött stíluslappal teljes (D-043).
+  if (url.startsWith(NEW))
+    await page.waitForFunction(() => document.documentElement.classList.contains('tx'));
   // A content-visibility: auto blokkok teljes oldalas képen üresek maradnának (D-033).
   await page.addStyleTag({ content: '.defer-render{content-visibility:visible!important}' });
   if (!polish) await page.evaluate(stripPolish);

@@ -1,6 +1,6 @@
 /**
  * Befagyasztott elemek őrei (prémium finomítás, 2. és 8. szakasz). Minden teszt a v1-approved
- * buildet (pnpm baseline → .baseline/dist, 8790) veti össze az új builddel (8788).
+ * buildet (pnpm baseline → .baseline/dist, 8796) veti össze az új builddel (8788).
  *
  * - Szerkezet-őr: szekciók sorrendje, címsorok, látható szöveg, linkek, képforrások, mezők.
  * - Arculat-őr: betű- és színadatok minden szöveges elemen, a 11 színtoken értéke.
