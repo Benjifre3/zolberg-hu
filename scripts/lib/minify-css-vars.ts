@@ -137,7 +137,7 @@ export function minifyCssVars(dist: string): { renamed: number; saved: number } 
         inlineVar(css)
           .replace(PROP, (_all, pre: string, n: string) => pre + (map.get(n) ?? n))
           // a custom propertyt tartalmazó értékekben a minifier meghagyja a „, ” szóközét
-          .replace(/("[^"]*"|'[^']*')|, /g, (m, quoted?: string) => quoted ?? ',') +
+          .replace(/("[^"]*"|'[^']*')|, /g, (_m, quoted?: string) => quoted ?? ',') +
         close,
     );
     saved += src.length - out.length;
