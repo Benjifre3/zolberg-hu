@@ -1,5 +1,5 @@
 /*
- * Nem kritikus prémium-rétegek (D-043): a hajtás alatti anyagok, a textúrák és a csak
+ * Nem kritikus prémium-rétegek (D-052): a hajtás alatti anyagok, a textúrák és a csak
  * interakcióra látszó mozgás-stílusok. A src/scripts/motion.ts tölti be a `load` után (csökkentett
  * mozgásnál is), így az első HTML a TCP első ablakában (≈ 14 KB) marad, és a textúra-fájlok nem
  * versenyeznek az LCP-képpel. A CSS-keretbe (25 KB) az inline résszel együtt számít.
@@ -39,7 +39,7 @@
     background-image: var(--tx-noise);
     border-block-end-color: var(--hairline);
     /* a minifier az utolsó alakot tartja meg: előtag előre (a v1-ben csak a -webkit- maradt,
-       és Chromiumban nem volt blur – D-042) */
+       és Chromiumban nem volt blur – D-051) */
     -webkit-backdrop-filter: blur(10px) saturate(1.2);
     backdrop-filter: blur(10px) saturate(1.2);
   }

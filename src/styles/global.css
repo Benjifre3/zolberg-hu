@@ -341,7 +341,7 @@ main:focus {
 }
 
 /* ───────────── Anyag és fény (prémium finomítás 3.) ─────────────
- * Mind a src/styles/deferred.css-ben van (D-043): a motion.ts a load után tölti be, így az első
+ * Mind a src/styles/deferred.css-ben van (D-052): a motion.ts a load után tölti be, így az első
  * HTML a TCP első ablakában (≈ 14 KB) marad. Ott minden réteg a `@supports (--polish: 1)` kapu
  * mögött van: a vizuális őr ezt törli, és a maradéknak képpontra a v1-approved-nak kell lennie.
  */

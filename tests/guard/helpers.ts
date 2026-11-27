@@ -19,7 +19,7 @@ export async function open(page: Page, url: string, opts: OpenOptions = {}): Pro
   const { polish = true, reducedMotion = 'reduce' } = opts;
   await page.emulateMedia({ reducedMotion });
   await page.goto(url);
-  // Az új build végleges kinézete a később betöltött stíluslappal teljes (D-043).
+  // Az új build végleges kinézete a később betöltött stíluslappal teljes (D-052).
   if (url.startsWith(NEW))
     await page.waitForFunction(() => document.documentElement.classList.contains('tx'));
   // A content-visibility: auto blokkok teljes oldalas képen üresek maradnának (D-033).

@@ -1,7 +1,7 @@
 # Prémium finomítás – terv (feat/premium-polish)
 
 Alap: a `v1-approved` címke (9a97a1c). A specifikáció 2–9. szakasza alapján. Ez a terv a kód előtt
-készült. Az eltéréseket és a döntéseket a `docs/DECISIONS.md` (D-041-től) indokolja.
+készült. Az eltéréseket és a döntéseket a `docs/DECISIONS.md` (D-050-től) indokolja.
 
 ## 0. Kiinduló mérések (v1-approved, tesztadatos build)
 
@@ -101,11 +101,11 @@ kezdőállapot (hero) él.
 | --------- | -------------------------- | ------------------------------------------------------------------ |
 | P0        | `test: P0 baseline …`      | `docs/baseline/`: képek, DOM/stílus, Lighthouse (LCP 2010 ms)      |
 | P1        | `feat: P1 motion tokens …` | inline indító CSP-hash-sel, `<RevealText>`                         |
-| P2        | `feat: P2 textures …`      | textúra-kapu, CSS-minifikálás (D-041), fejléc-blur javítás (D-042) |
-| P3        | `feat: P3 hero intro …`    | kritikus/később betöltött CSS (D-043)                              |
+| P2        | `feat: P2 textures …`      | textúra-kapu, CSS-minifikálás (D-050), fejléc-blur javítás (D-051) |
+| P3        | `feat: P3 hero intro …`    | kritikus/később betöltött CSS (D-052)                              |
 | P4        | `feat: P4 scroll scenes …` | IO-alapú élesítés, kényszerített elrendezés nélkül                 |
 | P5        | `feat: P5 …`               | görgetési teljesítményteszt, videó, dokumentáció                   |
 
 A tervhez képest változott: a textúra és az anyagrétegek nem inline, hanem a load után
-betöltött `deferred.css`-ben vannak (D-043). Az eltéréseket a D-041–D-047, a jóváhagyandó
+betöltött `deferred.css`-ben vannak (D-052). Az eltéréseket a D-050–D-056, a jóváhagyandó
 pontokat az OPEN_QUESTIONS C. része sorolja fel.

@@ -33,7 +33,7 @@ const cl = root.classList;
 cl.add('m-ok');
 
 // A nem kritikus prémium-stílusok (textúra, hajtás alatti anyagok, interakciók) az első tartalmas
-// festés (FCP) és a load után (D-043), mozgástól függetlenül: így nem versenyeznek a hero-képpel,
+// festés (FCP) és a load után (D-052), mozgástól függetlenül: így nem versenyeznek a hero-képpel,
 // és a lassú hálózat sem csúszik ki az első TCP-ablakból. Betöltve a <html> `tx` osztályt kap.
 let txDone = false;
 const tx = () => {
@@ -206,7 +206,7 @@ const groups: Group[] = [];
 /**
  * Egy csoport: amikor a `trigger` ≥ 20%-ban (vagy a képernyő 20%-ában) látszik, a lépések
  * lefutnak. Hogy rejtsünk-e, az IntersectionObserver első, aszinkron jelentése dönti el
- * (kényszerített elrendezés nélkül, D-043): ami az indításkor már látszik – akár csak egy
+ * (kényszerített elrendezés nélkül, D-052): ami az indításkor már látszik – akár csak egy
  * csíkja, pl. horgonyra érkezve –, az nem animálódik és nem villan; ami nem, az rejtve vár.
  */
 export function onView(trigger: Element | null | undefined, steps: Step[], run?: () => void) {
@@ -373,7 +373,7 @@ function intro() {
 
 // ───────── Görgetésre induló jelenetek (5.2) ─────────
 /**
- * Az első képkocka után, külön feladatban (D-043): a hajtás alatti elemek a festéskor úgysem
+ * Az első képkocka után, külön feladatban (D-052): a hajtás alatti elemek a festéskor úgysem
  * látszanak, így az LCP-kép festését és a TBT-t nem terheli a beállításuk.
  */
 function scenes() {
@@ -600,7 +600,7 @@ function spotlight() {
   }
 }
 /**
- * Indítás az első képkocka után (D-043): a modul-szkript a Chrome-ban az első festés előtt fut,
+ * Indítás az első képkocka után (D-052): a modul-szkript a Chrome-ban az első festés előtt fut,
  * így minden itt végzett munka az LCP-t tolná. A festéskor a CSS-kezdőállapot (.intro: átlátszó,
  * illetve elmosott keret) már ugyanaz, mint az animációk kezdőkockája, ezért az átvétel
  * észrevétlen. A rAF háttérlapon nem fut: a setTimeout a tartalék.

@@ -188,9 +188,9 @@ A felhasználó 2026-11-24-én azt kérte, hogy a hátralévő döntéseket kér
 
 ## Prémium finomítás (feat/premium-polish, 2026-11-27)
 
-A felhasználó kérte, hogy kérdés nélkül, önállóan dolgozzak. Ahol a specifikáció 9. pontja kérdést írna elő, a saját javaslatom szerint döntöttem. Ezek a döntések **visszafordíthatók**, és a `docs/OPEN_QUESTIONS.md` C. részében jóváhagyásra várnak.
+A felhasználó kérte, hogy kérdés nélkül, önállóan dolgozzak. Ahol a specifikáció 9. pontja kérdést írna elő, a saját javaslatom szerint döntöttem. Ezek a döntések **visszafordíthatók**, és a `docs/OPEN_QUESTIONS.md` C. részében jóváhagyásra várnak. A számozás D-050-nél kezdődik: a D-041–D-049 a `design/karakter-iranyok` ág döntéseinek van fenntartva (ott a D-041–D-045 már foglalt), így az összefésülés nem ütközik.
 
-### D-041 · 2026-11-27 · A 25 KB-os CSS-keret: build utáni minifikálás, nem lazítás
+### D-050 · 2026-11-27 · A 25 KB-os CSS-keret: build utáni minifikálás, nem lazítás
 
 A v1 CSS-e 23,4 KB volt (a keret tömörítetlenül 25 KB, D-033); a 3. és 5. szakasz rétegei ezen jóval túlmentek volna. A keretet nem lazítottam. Helyette egy Astro-integráció (`scripts/lib/minify-css-vars.ts`) a kész HTML-ben és a később betöltött stíluslapban:
 
@@ -200,11 +200,11 @@ A v1 CSS-e 23,4 KB volt (a keret tömörítetlenül 25 KB, D-033); a 3. és 5. s
 
 A számított stílus nem változik: az arculat-őr minden szöveges elemen ellenőrzi. Négy `transition` deklaráció rövidebb alakot kapott (ugyanaz a számított érték). Eredmény: **25,0 KB / 25 KB** (inline + később betöltött együtt). A keret szűk: új CSS csak úgy fér be, ha más CSS kikerül.
 
-### D-042 · 2026-11-27 · Talált hiba: a fejléc blurja a v1-ben Chromiumban soha nem működött
+### D-051 · 2026-11-27 · Talált hiba: a fejléc blurja a v1-ben Chromiumban soha nem működött
 
 A minifier az azonos jelentésű tulajdonságpárból az utolsót tartja meg. A v1-ben a `-webkit-backdrop-filter` állt hátul, így a kimenetben csak az maradt, amit a Chromium nem ismer (`CSS.supports` → false). A deferred.css-ben az előtagos alak áll elöl, az előtag nélküli hátul; görgetve az üveg mostantól valóban `blur(10px) saturate(1.2)`.
 
-### D-043 · 2026-11-27 · Kritikus és később betöltött CSS; a mozgás az első képkocka után indul
+### D-052 · 2026-11-27 · Kritikus és később betöltött CSS; a mozgás az első képkocka után indul
 
 Felezéses méréssel kimutattam (P2/P3), hogy a helyi Lighthouse LCP-je három okból nőtt:
 
@@ -214,14 +214,14 @@ Felezéses méréssel kimutattam (P2/P3), hogy a helyi Lighthouse LCP-je három 
 
 A `motion.ts` a fejléc szkriptjével egy fájlban épül (nincs plusz kérés). Eredmény (helyi LHCI, 5 futás mediánja): **Performance 99, LCP 2010 ms (v1: 2010 ms, +0), TBT 33 ms, CLS 0**, a szimulált FCP 840 ms (v1: 705 ms). Az FCP-nek nincs külön határa; a különbség a nagyobb HTML és a belépő miatti későbbi első tartalmas festés. Következmény: **JS nélkül nincs textúra és anyagréteg** (a v1 kinézete marad), és a hero-keret árnyéka, illetve a gomb tónusa a belépő alatt kerül a helyére.
 
-### D-044 · 2026-11-27 · Őrtesztek: ugyanazon a gépen, a címkéből építve
+### D-053 · 2026-11-27 · Őrtesztek: ugyanazon a gépen, a címkéből építve
 
 - A `pnpm baseline` a `v1-approved` címkét egy leválasztott git worktree-be építi (`.baseline/dist`, a 8796-os porton szolgálja ki). Az őrök (`tests/guard`) minden futáskor ezt vetik össze az új builddel, ugyanazon a gépen és böngészővel, így a Windows és a Linux betűsimítása nem okoz hamis eltérést. A CI-ban `fetch-depth: 0` kell (címke).
 - **Textúra-kapu:** minden 3. szakaszbeli réteg `@supports (--polish: 1)` blokkban van. A vizuális őr ezeket a CSSOM-ból törli, és csökkentett mozgásnál ≤ 0,5% eltérést enged (mért: 0,00%; textúrával ~29%, vagyis az őr érzékeny).
 - Az arculat-őr a szövegcsomópontok számított stílusát az azonos stílusú szomszédos szakaszok összevonásával veti össze: a szavankénti és betűnkénti span-ek ezért nem számítanak eltérésnek, a betűk, méretek, színek és háttérszínek viszont igen. A 11 színtoken értékét név szerint olvassa.
 - A 8790-es port egy közös előnézeti szerveré; a baseline ezért 8796-ra került.
 
-### D-045 · 2026-11-27 · A mozgás értelmezései
+### D-054 · 2026-11-27 · A mozgás értelmezései
 
 - **V2 a Zolbergen:** a szóvédjegy vermilion pontja a képernyő közepéről, `scale(0.3)`-ról repül a helyére, a végén lágy, 1,14-es pulzussal. A „zolberg” betűi ezután 25 ms-os lépcsőben élesednek. Teljes képernyős intro nincs.
 - **Időzítés:** a teljes belépő ~1560 ms (≤ 1,6 s, e2e teszt). A ceruza a „mérés” élesedése közben indul, és megtartja a v1 900 ms-os kirajzolását.
@@ -233,14 +233,14 @@ A `motion.ts` a fejléc szkriptjével egy fájlban épül (nincs plusz kérés).
 - **Visszatérő látogató** (ugyanabban a munkamenetben, `sessionStorage`): csak a H1 és a ceruza, ~600 ms. Horgonnyal vagy görgetve nyitott oldalon nincs belépő.
 - Az axe a nyugalmi állapotot méri (a belépő végét megvárja); mobilon csökkentett mozgással fut.
 
-### D-046 · 2026-11-27 · Eltérések a specifikációtól
+### D-055 · 2026-11-27 · Eltérések a specifikációtól
 
 - **Spotlight:** a specifikáció `--paper 8%`-ot ír, de a világos kártyán (`--paper-raised`) a papír szín sötétebb, és 8%-on láthatatlan. A fény a kártya felső fényélének fehérjével készül (`rgb(255 255 255 / .55)`, 260 px-es lágy kör). Ez a fehér a 3. szakaszban már szerepel.
-- **Link-aláhúzás:** a balról jobbra rajzolódó aláhúzás a csendes gombokon („Munkák megtekintése”, „Esettanulmányt kérek”) és a munkakártyák linkjein van. A kiemelt munka „Élő oldal” linkje és a lábléc linkjei a v1 aláhúzását tartják meg, mert a CSS-keretbe ennyi fért (D-041).
+- **Link-aláhúzás:** a balról jobbra rajzolódó aláhúzás a csendes gombokon („Munkák megtekintése”, „Esettanulmányt kérek”) és a munkakártyák linkjein van. A kiemelt munka „Élő oldal” linkje és a lábléc linkjei a v1 aláhúzását tartják meg, mert a CSS-keretbe ennyi fért (D-050).
 - **0,5 px-es hajszálvonal (2 dppx):** a GYIK, a lábléc, a bizonyíték-sáv és a folyamat elválasztó vonalain (a keret miatt nem az összes díszítő vonalon).
 - **Sötét sávok szemcséje:** semleges szürke, `soft-light`. A világos szemcse csökkentené a fehér szöveg kontrasztját; a `tests/unit/texture-contrast.test.ts` a legrosszabb képponton is AA-t ellenőriz.
 - **Fényfoltok:** a sáv saját tokenje + 5% `--paper`, illetve a hero mögött `--paper-raised`, mind tokenből képezve, új árnyalat nélkül. Az átlátszó változatok relatív színszintaxissal készültek (`rgb(from var(--line) r g b / .7)`): ugyanaz, mint a `color-mix`, csak rövidebb.
 
-### D-047 · 2026-11-27 · Textúrák
+### D-056 · 2026-11-27 · Textúrák
 
 `pnpm textures` (`scripts/make-textures.ts`): SVG feTurbulence, sharp-pal előre renderelt, csempézhető PNG-k (`stitchTiles`, rögzített seed), palettás tömörítéssel. Méretek: finom zaj 256×256 (14,4 KB, legfeljebb 3,9% fedés), papírrost 256 px 512 px-re nagyítva (1,7 KB, vízszintes szálak, legfeljebb 1,2%), sötét szemcse 128 px (4,6 KB, 128 ± 10 szürke). A papír együtt 16,1 KB (≤ 20 KB), az összes 20,7 KB (≤ 30 KB, a `check-budgets` ellenőrzi). A két papírréteg legsötétebb pontja sem sötétebb a v1 szemcséjénél, így a szöveg kontrasztja nem csökken (unit teszt). A v1 `grain.png` a textúra nélküli (kapuval törölt) állapothoz megmaradt.

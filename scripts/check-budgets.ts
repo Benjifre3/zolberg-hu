@@ -58,7 +58,7 @@ const linkedCss = doc
   .querySelectorAll('link[rel="stylesheet"]')
   .map((l) => readFileSync(join(DIST, l.getAttribute('href') ?? ''), 'utf8'))
   .join('\n');
-// A JS által a load után betöltött stíluslap (deferred.css, D-043) is a keretbe számít.
+// A JS által a load után betöltött stíluslap (deferred.css, D-052) is a keretbe számít.
 const deferredCss = (existsSync(join(DIST, '_astro')) ? walk(join(DIST, '_astro')) : [])
   .filter((f) => extname(f) === '.css')
   .map((f) => readFileSync(f, 'utf8'))

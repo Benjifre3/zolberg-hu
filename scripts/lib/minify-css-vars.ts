@@ -1,5 +1,5 @@
 /**
- * Build utáni CSS-minifikálás (D-041): a csak CSS-ben élő custom property nevek rövidítése
+ * Build utáni CSS-minifikálás (D-050): a csak CSS-ben élő custom property nevek rövidítése
  * (`--space-3` → `--a`) a dist/*.html inline <style> blokkjaiban. A számított stílus nem változik
  * (az arculat-őr ellenőrzi); a 25 KB-os CSS-keretbe így fér bele a prémium finomítás.
  *
@@ -82,7 +82,7 @@ function* shortNames(): Generator<string> {
 export function minifyCssVars(dist: string): { renamed: number; saved: number } {
   const files = walk(dist);
   const html = files.filter((f) => extname(f) === '.html');
-  /** a JS által később betöltött stíluslapok (deferred.css, D-043) */
+  /** a JS által később betöltött stíluslapok (deferred.css, D-052) */
   const sheets = files.filter((f) => extname(f) === '.css');
   const cssOf = (f: string): string[] =>
     extname(f) === '.css'

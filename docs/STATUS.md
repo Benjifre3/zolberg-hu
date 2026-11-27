@@ -10,7 +10,7 @@ betűk változatlanok (az őrtesztek minden futáskor a címkéhez hasonlítanak
 | Képernyővideó (asztali + mobil)  | `docs/polish-demo.mp4`                                                                              |
 | Textúrák előtte/utána            | `docs/polish/textura-*-elotte-utana.jpg` (felül v1, alul az új)                                     |
 | Teljes oldal textúrával          | `docs/polish/fooldal-*-textura.jpg`                                                                 |
-| Terv, döntések, nyitott kérdések | `docs/POLISH_PLAN.md`, `docs/DECISIONS.md` (D-041–D-047), `docs/OPEN_QUESTIONS.md` C. rész (Q9–Q13) |
+| Terv, döntések, nyitott kérdések | `docs/POLISH_PLAN.md`, `docs/DECISIONS.md` (D-050–D-056), `docs/OPEN_QUESTIONS.md` C. rész (Q9–Q13) |
 
 Mérés (helyi Lighthouse mobil, 5 futás mediánja): **99 / 100 / 100 / 100, LCP 2010 ms (v1: 2010),
 TBT 33 ms, CLS 0**; JS 6,6 / 15 KB gzip (a `motion.ts` ≈ 3,7 KB), CSS 25,0 / 25 KB, textúrák

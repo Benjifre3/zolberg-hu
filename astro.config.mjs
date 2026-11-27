@@ -33,7 +33,7 @@ export default defineConfig({
     },
   },
   integrations: [
-    // D-041: a csak CSS-ben élő custom property nevek rövidítése a kész HTML-ben (CSS-keret 9.)
+    // D-050: a csak CSS-ben élő custom property nevek rövidítése a kész HTML-ben (CSS-keret 9.)
     {
       name: 'zolberg:minify-css-vars',
       hooks: {

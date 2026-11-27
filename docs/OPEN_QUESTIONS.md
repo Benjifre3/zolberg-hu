@@ -92,24 +92,24 @@ A helyi Lighthouse CI (szimulált lassú 4G, HTTP/1.1-es statikus szerver, Windo
 
 A kérésedre kérdés nélkül döntöttem; mindegyik visszafordítható. A specifikáció 9. pontja szerint itt áll, mi volt a cél, miért nem ment szó szerint, és mi a legközelebbi megengedett megoldás.
 
-### Q9 · CSS-keret (25 KB) · DÖNTÖTTEM: minifikálás, a keret marad (D-041)
+### Q9 · CSS-keret (25 KB) · DÖNTÖTTEM: minifikálás, a keret marad (D-050)
 
 - **Cél:** a 3. és 5. szakasz minden rétege, a v1 CSS-e mellé.
 - **Akadály:** a v1 már 23,4 KB volt, a rétegek ~4 KB-ot adtak volna.
-- **Megoldás:** build utáni custom property-rövidítés és -behelyettesítés (a számított stílus azonos, az arculat-őr ellenőrzi). Most pontosan 25,0 KB. Két tétel szűkebb lett: a link-aláhúzás és a 0,5 px-es hajszálvonal (D-046).
+- **Megoldás:** build utáni custom property-rövidítés és -behelyettesítés (a számított stílus azonos, az arculat-őr ellenőrzi). Most pontosan 25,0 KB. Két tétel szűkebb lett: a link-aláhúzás és a 0,5 px-es hajszálvonal (D-055).
 - **Ha bővítenéd:** (a) a CSS-keret gzip-pel mérve (≈ 7 KB lenne), vagy (b) 28 KB-ra emelve. Mindkettő a te döntésed, mert a 9. szakasz határa.
 
-### Q10 · JS nélkül nincs textúra · DÖNTÖTTEM: a textúra a load után töltődik (D-043)
+### Q10 · JS nélkül nincs textúra · DÖNTÖTTEM: a textúra a load után töltődik (D-052)
 
 - **Cél:** textúra és anyag minden látogatónak.
 - **Akadály:** inline CSS-ként az `index.html` kilóg az első TCP-ablakból: LCP +225 ms (a határ +100 ms).
 - **Megoldás:** a rétegek egy később betöltött stíluslapban vannak. JS nélkül a v1 kinézete marad (ez a kisebbség, és a tartalom teljes).
 
-### Q11 · Spotlight színe · DÖNTÖTTEM: a felső fényél fehérje, nem `--paper 8%` (D-046)
+### Q11 · Spotlight színe · DÖNTÖTTEM: a felső fényél fehérje, nem `--paper 8%` (D-055)
 
 A `--paper` a világos kártyán sötétebb a háttérnél, és 8%-on nem látszik. Ha szó szerint kéred, egy sor a `src/scripts/motion.ts` `spotlight()` függvényében.
 
-### Q12 · Animálatlan H2-k · DÖNTÖTTEM: csak a főoldal szekciócímei (D-045)
+### Q12 · Animálatlan H2-k · DÖNTÖTTEM: csak a főoldal szekciócímei (D-054)
 
 A lábléc oszlopcímkéi és a jogi oldalak címsorai nem íródnak ki szavanként. Ha mégis kéred, a `<RevealText>` ezekre is ráhúzható (a CSS-t nem terheli).
 
