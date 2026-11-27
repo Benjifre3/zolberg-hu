@@ -1,8 +1,9 @@
 # Biztonsági fejlécek (master prompt 3., D-039). Csak saját origin; nincs harmadik fél (2.4).
 # A stílus 'unsafe-inline': a teljes CSS a HTML-be ágyazott (gyorsabb első festés, 9.);
-# a szkriptek külső fájlok, ezért a script-src 'self' elég.
+# A szigetek külső fájlok; az egyetlen inline szkript a mozgás-indító (src/lib/motion-boot.ts),
+# azt a sha256-hash-e engedi (a tests/unit/motion-boot.test.ts ellenőrzi).
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-9BjNOyZhZT6RNCPCmBOPPjmL0+95Fryb9GwDXyPgzqU='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

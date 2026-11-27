@@ -25,17 +25,12 @@ export async function open(page: Page, url: string, opts: OpenOptions = {}): Pro
   await page.evaluate(async () => {
     const imgs = [...document.images];
     for (const img of imgs) img.loading = 'eager';
-    await Promise.all(
-      imgs.map((img) =>
-        img.complete
-          ? img.decode().catch(() => undefined)
-          : new Promise((r) => {
-              img.onload = img.onerror = r;
-            }),
-      ),
-    );
+    // A decode() a betöltést is megvárja; utána két képkocka, hogy a festés is megtörténjen.
+    await Promise.all(imgs.map((img) => img.decode().catch(() => undefined)));
     await document.fonts.ready;
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   });
+  await page.waitForLoadState('networkidle');
 }
 
 /** A textúra-kapu blokkjainak törlése (a böngészőben fut). */

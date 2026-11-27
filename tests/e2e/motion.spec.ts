@@ -1,0 +1,95 @@
+/**
+ * Prémium mozgás (prémium finomítás 5–6.): progresszív javítás, reduced-motion, CSP, és hogy az
+ * animációk után nem marad inline stílus, filter vagy rejtett tartalom.
+ */
+import { test, expect, type Page } from '@playwright/test';
+
+/** A hajtás alatti elemek közül azok, amelyek még rejtettek (inline opacity: 0). */
+const hiddenCount = (page: Page) =>
+  page.evaluate(() => document.querySelectorAll('[data-m-hidden]').length);
+
+/** Végiggörget az oldalon, és megvárja, hogy minden animáció lefusson. */
+async function scrollThrough(page: Page) {
+  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y <= height; y += 400) {
+    await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(60);
+  }
+  await page.waitForFunction(
+    () => document.getAnimations().every((a) => a.playState === 'finished'),
+    null,
+    {
+      timeout: 10_000,
+    },
+  );
+}
+
+test.describe('mozgás – indítás és kapuk', () => {
+  test('nincs CSP-sértés és konzolhiba; a mozgás-osztályok fent vannak', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('console', (m) => {
+      if (m.type() === 'error') errors.push(m.text());
+    });
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto('/');
+    await expect(page.locator('html')).toHaveClass(/\bm-ok\b/);
+    await expect(page.locator('html')).toHaveClass(/\bmotion\b/);
+    expect(errors).toEqual([]);
+  });
+
+  test('csökkentett mozgásnál nincs mozgás-osztály és nincs rejtett elem', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await expect(page.locator('html')).not.toHaveClass(/\bmotion\b|\bintro/);
+    expect(await hiddenCount(page)).toBe(0);
+    const running = await page.evaluate(
+      () => document.getAnimations().filter((a) => !(a instanceof CSSAnimation)).length,
+    );
+    expect(running).toBe(0);
+  });
+
+  test('JS nélkül minden tartalom látszik', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('/');
+    for (const h of await page.locator('h1, h2:not(.visually-hidden)').all()) {
+      await expect(h).toHaveCSS('opacity', '1');
+    }
+    const invisible = await page.evaluate(() =>
+      [...document.querySelectorAll('main *, footer *')]
+        // a csúszka natív range-mezője szándékosan átlátszó (v1, BeforeAfter.astro)
+        .filter((el) => !el.matches('.ba__range'))
+        .filter((el) => getComputedStyle(el).opacity === '0')
+        .map((el) => el.outerHTML.slice(0, 80)),
+    );
+    expect(invisible).toEqual([]);
+    await context.close();
+  });
+
+  test('a szekciócímek egyben olvashatók (aria-label), a szavak aria-hidden', async ({ page }) => {
+    await page.goto('/');
+    const h2 = page.getByRole('heading', { level: 2, name: 'Munkák, mérésekkel együtt.' });
+    await expect(h2).toHaveCount(1);
+    await expect(h2.locator('span[aria-hidden="true"]')).toHaveCount(3);
+  });
+
+  test('görgetés után minden látszik, és nem marad inline stílus vagy filter', async ({ page }) => {
+    await page.goto('/');
+    await scrollThrough(page);
+    expect(await hiddenCount(page)).toBe(0);
+    const leftovers = await page.evaluate(() =>
+      [...document.querySelectorAll('main [style], footer [style]')]
+        .map((el) => (el as HTMLElement).style.cssText)
+        .filter((s) => /opacity|transform|filter|clip-path|will-change|display/.test(s)),
+    );
+    expect(leftovers).toEqual([]);
+  });
+
+  test('horgonyra érkezve a cél szekció azonnal látszik (nincs villanás)', async ({ page }) => {
+    await page.goto('/#gyik');
+    const h2 = page.locator('#gyik-cim');
+    await expect(h2).toBeInViewport();
+    const spans = h2.locator('span');
+    for (const s of await spans.all()) await expect(s).toHaveCSS('opacity', '1');
+  });
+});

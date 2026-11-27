@@ -67,6 +67,18 @@
   --dur-fast: 160ms;
   --dur-base: 200ms;
 
+  /* Prémium mozgás (5.): a src/scripts/motion.ts innen olvassa, a kulcskockák JS-ben vannak */
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-xs: 180ms;
+  --dur-s: 420ms;
+  --dur-m: 700ms;
+  --dur-l: 1000ms;
+  --stagger-word: 70ms;
+  --stagger-item: 90ms;
+  --reveal-blur: 10px;
+  --reveal-y: 0.35em;
+
   color-scheme: light;
 }
 

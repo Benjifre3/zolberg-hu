@@ -5,6 +5,7 @@
  * JS nélkül natív POST a /api/contact-ra; JS-sel helyi validáció + fetch (W4, D-018, D-035).
  */
 import Arrow from './Arrow.astro';
+import RevealText from './RevealText.astro';
 import { site, telHref } from '../lib/site.ts';
 import { CONTACT_ID } from '../lib/nav.ts';
 import { HONEYPOT, TIMESTAMP } from '../lib/contact-rules.ts';
@@ -28,7 +29,7 @@ const fields = [
 >
   <div class="container contact__inner">
     <div class="contact__text">
-      <h2 id="kapcsolat-cim">Kérem a mért adatokat.</h2>
+      <RevealText id="kapcsolat-cim" text="Kérem a mért adatokat." />
       <p class="contact__intro">
         Három mező, hírlevél nélkül.
         {days && (
