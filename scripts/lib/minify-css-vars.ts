@@ -137,7 +137,10 @@ export function minifyCssVars(dist: string): { renamed: number; saved: number } 
     inlineVar(css)
       .replace(PROP, (_all, pre: string, n: string) => pre + (map.get(n) ?? n))
       // a custom propertyt tartalmazó értékekben a minifier meghagyja a „, ” szóközét
-      .replace(/("[^"]*"|'[^']*')|, /g, (_m, quoted?: string) => quoted ?? ',');
+      .replace(/("[^"]*"|'[^']*')|, /g, (_m, quoted?: string) => quoted ?? ',')
+      // az Astro Fonts nem minifikált @font-face blokkjai: a font-style:normal az alapérték
+      .replace(/;font-style:normal;?}/g, '}')
+      .replace(/;}/g, '}');
 
   let saved = 0;
   for (const f of [...html, ...sheets]) {

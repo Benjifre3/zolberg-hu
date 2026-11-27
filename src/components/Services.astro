@@ -24,7 +24,7 @@ const ICONS: Record<string, string[]> = {
         <li class="services__card">
           <svg class="services__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             {(ICONS[s.icon] ?? []).map((d) => (
-              <path d={d} />
+              <path d={d} pathLength="1" />
             ))}
           </svg>
           <h3>{s.title}</h3>

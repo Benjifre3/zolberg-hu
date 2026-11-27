@@ -198,31 +198,23 @@ interface Group {
   trigger: Element;
   steps: Step[];
   run?: () => void;
+  /** az IO első jelentése megjött (a trigger akkor nem látszott, a lépések rejtve) */
+  armed?: boolean;
 }
 const groups: Group[] = [];
-/**
- * A szekciók helye egyetlen méréssel, minden írás előtt (különben minden hide() után új
- * elrendezést kényszerítene ki: ez a Lighthouse-ban 100 ms-os long task volt).
- */
-const tops = new Map<Element, number>();
-const measure = () => {
-  for (const s of document.querySelectorAll('main > *, body > footer'))
-    tops.set(s, s.getBoundingClientRect().top);
-};
 
 /**
  * Egy csoport: amikor a `trigger` ≥ 20%-ban (vagy a képernyő 20%-ában) látszik, a lépések
- * lefutnak. Ha a szekciója az indításkor nem a képernyő alatt van, semmi nem rejtőzik el.
+ * lefutnak. Hogy rejtsünk-e, az IntersectionObserver első, aszinkron jelentése dönti el
+ * (kényszerített elrendezés nélkül, D-043): ami az indításkor már látszik – akár csak egy
+ * csíkja, pl. horgonyra érkezve –, az nem animálódik és nem villan; ami nem, az rejtve vár.
  */
 export function onView(trigger: Element | null | undefined, steps: Step[], run?: () => void) {
-  if (!trigger || reduce) return;
-  const section = trigger.closest('main > *, body > footer') ?? trigger;
-  if ((tops.get(section) ?? 0) < innerHeight) return;
-  for (const [el, from, o] of steps) hide(el, from, o);
+  if (!trigger || reduce || !io) return;
   const g: Group = { trigger, steps };
   if (run) g.run = run;
   groups.push(g);
-  io?.observe(trigger);
+  io.observe(trigger);
 }
 
 const io =
@@ -230,11 +222,23 @@ const io =
     ? new IntersectionObserver(
         (entries) => {
           for (const e of entries) {
-            if (!e.isIntersecting) continue;
-            if (e.intersectionRatio < 0.2 && e.intersectionRect.height < innerHeight * 0.2)
-              continue;
-            io?.unobserve(e.target);
-            for (const g of groups.filter((x) => x.trigger === e.target)) fire(g);
+            for (const g of groups.filter((x) => x.trigger === e.target)) {
+              if (!g.armed) {
+                if (e.isIntersecting) {
+                  groups.splice(groups.indexOf(g), 1);
+                  io?.unobserve(e.target);
+                } else {
+                  g.armed = true;
+                  for (const [el, from, o] of g.steps) hide(el, from, o);
+                }
+                continue;
+              }
+              if (!e.isIntersecting) continue;
+              if (e.intersectionRatio < 0.2 && e.intersectionRect.height < innerHeight * 0.2)
+                continue;
+              io?.unobserve(e.target);
+              fire(g);
+            }
           }
         },
         { threshold: [0, 0.2] },
@@ -375,9 +379,227 @@ function intro() {
  * látszanak, így az LCP-kép festését és a TBT-t nem terheli a beállításuk.
  */
 function scenes() {
-  measure();
+  const I = STAGGER.item;
+  const fade: From = { opacity: 0 };
+  const up = (px: number) => rise(`${px}px`);
+  /** a sáv háttere papírból a saját színébe úszik (fedőréteg a ::before-on, csak opacity) */
+  const cover = (band: Element | null): Step => [
+    band,
+    { opacity: 1 },
+    { pseudo: '::before', to: { opacity: 0 }, dur: DUR.m, ease: SOFT },
+  ];
+
   // V7: szekciócímek szavanként
   for (const h of $$('main h2[data-reveal]')) onView(h, words(h));
+
+  // V11 + V12: bizonyíték-sáv – papír → tinta, a számok blurból (a meglévő count-up mellett),
+  // a mono forrás-sor utolsóként
+  const proof = $('.proof');
+  onView(proof, [
+    cover(proof),
+    ...stagger($$('.proof__value'), up(12), { delay: 200, blur: true }),
+    ...stagger($$('.proof__label'), up(8), { delay: 320, dur: DUR.s }),
+    ...stagger($$('.proof__source'), fade, { delay: 600, dur: DUR.s }),
+  ]);
+
+  // V8: kiemelt munka – a keret alulról és kicsinyítve, a jobb oldal lépcsőzve, metrika count-up
+  const featured = $('.featured__card');
+  onView(
+    featured,
+    [
+      [
+        $('.featured__media'),
+        { opacity: 0, transform: 'translateY(48px) scale(.97)' },
+        { dur: DUR.l },
+      ],
+      ...stagger($$('.featured__body > *'), up(16), { delay: 160, dur: DUR.s }),
+    ],
+    () =>
+      $$('.metrics--large .metrics__value').forEach((v, i) =>
+        setTimeout(() => countUp(v), 500 + i * I),
+      ),
+  );
+
+  // V9: előtte/utána csúszka – egyszeri, lassú „megmutatás”, ha még senki nem nyúlt hozzá
+  const ba = $('[data-before-after]');
+  onView(ba, [], () => hint(ba));
+
+  // V10: szűrő-pirulák balról jobbra
+  const filter = $('[data-work-filter]');
+  onView(filter, stagger($$('[data-work-filter] .pill'), up(6), { each: 60, dur: DUR.s }));
+
+  // V8: munkarács – soronként emelkedés, bent kép → név → metrikák → címkék
+  const two = innerWidth >= 834;
+  $$('.works__grid .work-card').forEach((card, i) => {
+    const d = two ? (i % 2) * I : 0;
+    onView(card, [
+      [card, up(64), { delay: d, dur: DUR.l }],
+      ...stagger(
+        card.querySelectorAll(
+          '.work-card__title, .work-card__text, .metrics, .work-tags, .work-card__links',
+        ),
+        up(10),
+        { delay: d + 240, dur: DUR.s, each: 70 },
+      ),
+    ]);
+  });
+
+  // V8 + V9: szolgáltatás – kártya-lépcső, az ikonok vonala kirajzolódik (600 ms)
+  const cards = $$('.services__card');
+  onView($('.services__grid'), [
+    ...stagger(cards, up(40), { dur: DUR.m }),
+    ...cards.flatMap((c, i) =>
+      [...c.querySelectorAll('.services__icon path')].map((p): Step => [
+        p,
+        { strokeDasharray: '1', strokeDashoffset: '1' },
+        {
+          delay: 200 + i * I,
+          dur: 600,
+          ease: SOFT,
+          to: { strokeDasharray: '1', strokeDashoffset: '0' },
+        },
+      ]),
+    ),
+  ]);
+
+  // V12: folyamat – papír → erdőzöld, a 01–04 maszk mögül csúszik fel
+  const process = $('.process');
+  onView(process, [
+    cover(process),
+    ...stagger(
+      $$('.process__num'),
+      { transform: 'translateY(100%)', clipPath: 'inset(-30% -10% 100% -10%)' },
+      {
+        delay: 250,
+        dur: DUR.m,
+        to: { clipPath: 'inset(-30% -10% -30% -10%)' },
+      },
+    ),
+  ]);
+
+  // V8: rólam – a portré blurból és 1,04-ről; a cégadat-sor gépelésszerűen (clip-path, ≤ 500 ms)
+  const facts = $('.about__facts');
+  onView($('.about'), [
+    [$('.about__portrait'), { opacity: 0, transform: 'scale(1.04)' }, { blur: true, dur: DUR.l }],
+    [
+      facts,
+      { clipPath: 'inset(0 100% 0 0)' },
+      {
+        delay: 600,
+        dur: Math.min(500, (facts?.textContent?.length ?? 0) * 12),
+        ease: `steps(${facts?.textContent?.length ?? 1})`,
+      },
+    ],
+  ]);
+
+  // V13: GYIK – a kérdések lépcsőzve (a <details> magasság-animációja CSS: deferred.css)
+  onView($('.faq__list'), stagger($$('.faq__item'), up(16), { dur: DUR.s, each: 70 }));
+
+  // V14: kapcsolat – a teljes panel 80 px-ről lassan, utána a mezők sorban
+  const contact = $('.contact');
+  onView(contact, [
+    [contact, up(80), { dur: DUR.l }],
+    ...stagger($$('.cform__field, .cform__submit'), up(12), { delay: 400, dur: DUR.s }),
+  ]);
+
+  // V14: lábléc – az óriás szóvédjegy betűnként maszk mögül, a pont utolsóként „koppan”
+  const giant = $$('.site-footer__giant .wordmark > span');
+  const dotEl = giant.pop();
+  onView($('.site-footer__giant'), [
+    ...stagger(
+      giant,
+      { opacity: 0, transform: 'translateY(100%)', clipPath: 'inset(-40% -10% 100% -10%)' },
+      {
+        each: 45,
+        dur: DUR.m,
+        block: true,
+        to: { clipPath: 'inset(-40% -10% -40% -10%)' },
+      },
+    ),
+    [
+      dotEl,
+      { opacity: 0, transform: 'scale(0)' },
+      { delay: giant.length * 45 + 250, dur: DUR.s, block: true },
+    ],
+  ]);
+
+  spotlight();
+}
+
+/** Count-up a mért értékeken (a szöveg a végén pontosan az eredeti; a szélesség rögzített). */
+function countUp(el: Element) {
+  const h = el as HTMLElement;
+  const final = h.textContent ?? '';
+  const nums = [...final.matchAll(/\d+(?:,\d+)?/g)].map((m) => m[0]);
+  if (!nums.length) return;
+  h.style.minWidth = `${h.getBoundingClientRect().width}px`;
+  const t0 = performance.now();
+  const step = (now: number) => {
+    const p = Math.min(1, (now - t0) / 900);
+    const e = 1 - (1 - p) ** 3;
+    let i = 0;
+    h.textContent =
+      p < 1
+        ? final.replace(/\d+(?:,\d+)?/g, (n) => {
+            const dec = (nums[i++] ?? n).split(',')[1]?.length ?? 0;
+            return (parseFloat(n.replace(',', '.')) * e).toFixed(dec).replace('.', ',');
+          })
+        : final;
+    if (p < 1) requestAnimationFrame(step);
+    else {
+      h.style.removeProperty('min-width');
+      tidy(h);
+    }
+  };
+  requestAnimationFrame(step);
+}
+
+/** A csúszka egyszeri „megmutatása”: 50 → 38 → 50% (1,2 s), csak érintetlen csúszkán. */
+function hint(root: Element | null) {
+  const range = root?.querySelector<HTMLInputElement>('[data-ba-range]');
+  const handle = root?.querySelector('[data-ba-handle]');
+  const before = root?.querySelector('[data-ba-before]');
+  if (!root || !range || !handle || !before || range.value !== '50') return;
+  const dx = -(root.querySelector('.ba__stage')?.clientWidth ?? 0) * 0.12;
+  const o: KeyframeAnimationOptions = { duration: 1200, easing: SOFT };
+  const anims = [
+    handle.animate(
+      [{ transform: 'none' }, { transform: `translateX(${dx}px)` }, { transform: 'none' }],
+      o,
+    ),
+    before.animate(
+      [
+        { clipPath: 'inset(0 50% 0 0)' },
+        { clipPath: 'inset(0 62% 0 0)' },
+        { clipPath: 'inset(0 50% 0 0)' },
+      ],
+      o,
+    ),
+  ];
+  const stop = () => anims.forEach((a) => a.cancel());
+  for (const ev of ['pointerdown', 'keydown', 'input', 'focus'])
+    range.addEventListener(ev, stop, { once: true });
+}
+
+/** Kurzort követő lágy fény a szolgáltatás-kártyákon (csak finom mutatóval, hoverre). */
+function spotlight() {
+  if (!matchMedia('(pointer: fine) and (hover: hover)').matches) return;
+  for (const card of $$('.services__card')) {
+    const c = card as HTMLElement;
+    let raf = 0;
+    c.addEventListener('pointermove', (e) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = c.getBoundingClientRect();
+        c.style.backgroundImage = `radial-gradient(260px circle at ${e.clientX - r.left}px ${e.clientY - r.top}px, rgb(255 255 255 / .55), transparent 70%)`;
+      });
+    });
+    c.addEventListener('pointerleave', () => {
+      cancelAnimationFrame(raf);
+      c.style.removeProperty('background-image');
+      tidy(c);
+    });
+  }
 }
 /**
  * Indítás az első képkocka után (D-043): a modul-szkript a Chrome-ban az első festés előtt fut,

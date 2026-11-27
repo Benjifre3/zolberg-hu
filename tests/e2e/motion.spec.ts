@@ -43,7 +43,10 @@ test.describe('mozgás – indítás és kapuk', () => {
     await expect(page.locator('html')).not.toHaveClass(/\bmotion\b|\bintro/);
     expect(await hiddenCount(page)).toBe(0);
     const running = await page.evaluate(
-      () => document.getAnimations().filter((a) => !(a instanceof CSSAnimation)).length,
+      () =>
+        document
+          .getAnimations()
+          .filter((a) => !(a instanceof CSSAnimation) && !(a instanceof CSSTransition)).length,
     );
     expect(running).toBe(0);
   });
@@ -100,7 +103,7 @@ test.describe('mozgás – hero-belépő (5.1)', () => {
     page.evaluate(() =>
       document
         .getAnimations()
-        .filter((a) => !(a instanceof CSSAnimation))
+        .filter((a) => !(a instanceof CSSAnimation) && !(a instanceof CSSTransition))
         .map((a) => {
           const t = (a.effect as KeyframeEffect | null)?.target;
           return t ? t.className || t.tagName : '';
@@ -148,5 +151,85 @@ test.describe('mozgás – hero-belépő (5.1)', () => {
     expect(names.length).toBeGreaterThan(0);
     expect(names.some((n) => n.includes('hero__lead') || n.includes('hero-visual'))).toBe(false);
     expect(names.every((n) => n === 'SPAN' || n === '' || /mark__/.test(n))).toBe(true);
+  });
+});
+
+test.describe('mozgás – görgetésre induló jelenetek és mikro-interakciók (5.2–5.3)', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test('csúszka: egyszeri megmutatás, az érték marad 50; bevitelre azonnal leáll', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => document.documentElement.classList.contains('tx'));
+    await page.locator('[data-before-after]').scrollIntoViewIfNeeded();
+    const handle = page.locator('[data-ba-handle]');
+    await expect
+      .poll(() => handle.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
+      .toBeGreaterThan(0);
+    await expect(page.locator('[data-ba-range]')).toHaveValue('50');
+    await page.locator('[data-ba-range]').focus();
+    expect(await handle.evaluate((el) => el.getAnimations().length)).toBe(0);
+  });
+
+  test('GYIK: a <details> nyitása magasság-animációval (ha a böngésző támogatja)', async ({
+    page,
+  }) => {
+    await page.goto('/#gyik');
+    await page.waitForFunction(() => document.documentElement.classList.contains('tx'));
+    const supported = await page.evaluate(() => CSS.supports('selector(::details-content)'));
+    test.skip(!supported, 'nincs ::details-content támogatás');
+    // az átmenethez kell egy már kiszámolt kezdőállapot (a stíluslap épp most töltődött be)
+    await page.waitForTimeout(300);
+    // félúton a magasság a 0 és a végleges érték között van
+    const [mid, end] = await page.evaluate(async () => {
+      const d = document.querySelector('.faq__item');
+      d?.querySelector('summary')?.click();
+      const h = () => (d ? parseFloat(getComputedStyle(d, '::details-content').blockSize) : 0);
+      await new Promise((r) => setTimeout(r, 60));
+      const m = h();
+      await new Promise((r) => setTimeout(r, 800));
+      return [m, h()];
+    });
+    expect(mid).toBeGreaterThan(0);
+    expect(mid).toBeLessThan(end);
+    await expect(page.locator('.faq__item').first()).toHaveAttribute('open', '');
+  });
+
+  test('link: hoverre az aláhúzás balról jobbra rajzolódik', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => document.documentElement.classList.contains('tx'));
+    const link = page.locator('.section-head__link').first();
+    await link.scrollIntoViewIfNeeded();
+    const span = link.locator('span').first();
+    await expect(span).toHaveCSS('background-size', '0px 1px');
+    await link.hover();
+    await expect(span).not.toHaveCSS('background-size', '0px 1px');
+    await expect(span).toHaveCSS('background-size', /1px$/);
+    await expect(link).toHaveCSS('text-decoration-color', 'rgba(0, 0, 0, 0)');
+  });
+
+  test('szolgáltatás: az ikonok kirajzolódnak, utána nem marad dash-beállítás', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.locator('.services__grid').scrollIntoViewIfNeeded();
+    await page.waitForFunction(() =>
+      document
+        .getAnimations()
+        .every(
+          (a) =>
+            a.playState === 'finished' ||
+            !(a instanceof Animation) ||
+            a instanceof CSSAnimation ||
+            a instanceof CSSTransition,
+        ),
+    );
+    await page.waitForTimeout(1500);
+    const dash = await page
+      .locator('.services__icon path')
+      .first()
+      .evaluate((p) => (p as SVGPathElement).style.strokeDasharray);
+    expect(dash).toBe('');
   });
 });

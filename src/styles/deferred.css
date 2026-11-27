@@ -11,10 +11,9 @@
     --shadow-card:
       0 1px 0 rgb(20 19 15 / 0.05), 0 2px 6px -2px rgb(20 19 15 / 0.08),
       0 24px 48px -28px rgb(20 19 15 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.6);
-    --shadow-card-hover:
-      0 1px 0 rgb(20 19 15 / 0.05), 0 4px 10px -4px rgb(20 19 15 / 0.1),
-      0 34px 60px -30px rgb(20 19 15 / 0.2), inset 0 1px 0 rgb(255 255 255 / 0.6);
-    --hairline: color-mix(in srgb, var(--line) 70%, transparent);
+    /* hoverre (munkakártya, +4 px): ugyanaz, egy mélyebb ambient réteggel */
+    --shadow-card-hover: var(--shadow-card), 0 34px 60px -30px rgb(20 19 15 / 0.12);
+    --hairline: rgb(from var(--line) r g b / 0.7);
     --tx-noise: url('/tx/noise.png');
     --tx-fiber: url('/tx/fiber.png');
     --tx-grain: url('/tx/grain-dark.png');
@@ -61,10 +60,7 @@
   }
 
   /* Böngészőkeret: hajszálvonal-keret, felülről világosodó sáv, belső szegély, vinyetta */
-  .browser {
-    border-color: var(--hairline);
-  }
-
+  .browser,
   .browser__bar {
     background: linear-gradient(
       color-mix(in srgb, var(--paper-raised), var(--paper) 70%),
@@ -96,7 +92,7 @@
 
   /* Ceruza-textúra: a vonal mentén változó átlátszóság; a szín marad --accent-mark */
   .mark svg {
-    mask-image: linear-gradient(90deg, #000c, #000 16%, #000b 38%, #000 58%, #000a 80%, #000e);
+    mask-image: linear-gradient(90deg, #000c, #000 20%, #000a 45%, #000 70%, #000d);
   }
 
   /* Kártyák: hajszálvonal-keret a háromrétegű árnyék mellé */
@@ -116,7 +112,7 @@
     overflow: hidden;
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.18),
-      0 8px 18px -8px color-mix(in srgb, var(--accent) 25%, transparent);
+      0 8px 18px -8px rgb(from var(--accent) r g b / 0.25);
   }
 
   .btn--primary,
@@ -136,19 +132,16 @@
   @media (hover: hover) {
     .btn--primary:hover::after {
       transform: translateX(101%);
-      transition: transform var(--dur-m) var(--ease-out-expo);
+      transition: var(--dur-m) var(--ease-out-expo);
     }
   }
 
   /* Hajszálvonalak 2 dppx-en: 0,5 px-esnek hatnak */
   @media (min-resolution: 2dppx) {
-    .faq__list,
     .faq__item,
     .site-footer,
-    .metrics--large li,
     .proof__item,
-    .process__step,
-    .browser__bar {
+    .process__step {
       border-width: 0.5px;
     }
   }
@@ -163,6 +156,73 @@
       background-image: none;
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
+    }
+  }
+}
+
+/*
+ * Mozgás-stílusok (5.2–5.3). Nyugalomban nem változtatnak a képen (a fedőréteg átlátszó, a
+ * lezárt <details> tartalma eddig is rejtett volt), ezért nincsenek a textúra-kapu mögött.
+ */
+/* V12: a sötét sávok fedőrétege – a motion.ts a .m-cover-t teszi fel, és opacity-vel tünteti el */
+.on-ink,
+.on-forest {
+  position: relative;
+  isolation: isolate;
+}
+
+.on-ink::before,
+.on-forest::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--paper);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.m-cover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* GYIK: magasság-animáció; támogatás nélkül a <details> azonnal nyílik (v1) */
+  .faq__item::details-content {
+    interpolate-size: allow-keywords;
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size var(--dur-s) var(--ease-out-expo),
+      content-visibility var(--dur-s) allow-discrete;
+  }
+
+  .faq__item[open]::details-content {
+    block-size: auto;
+  }
+
+  /* Linkek: hoverre az aláhúzás balról jobbra rajzolódik (250 ms); nyugalomban a v1 aláhúzása */
+  @media (hover: hover) {
+    .btn--quiet > span,
+    .work-card__links a {
+      background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+      transition: background-size 250ms var(--ease-out-expo);
+    }
+
+    .work-card__links a {
+      background-position: 0 calc(50% + 0.65em);
+    }
+
+    :is(.btn--quiet, .work-card__links a):hover {
+      text-decoration-color: #0000;
+    }
+
+    .btn--quiet:hover > span {
+      background-size: 100% 1px;
+    }
+
+    .work-card__links a:hover {
+      background-size: calc(100% - 1.4em) 1px;
     }
   }
 }
